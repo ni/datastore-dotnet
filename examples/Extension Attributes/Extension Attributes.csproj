@@ -11,13 +11,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="NationalInstruments.Core" />
-    <PackageReference Include="NationalInstruments.TestStand.API" />
     <PackageReference Include="NI.Discovery.V1.Client" />
     <PackageReference Include="NI.Measurements.Data.V1.Api" />
     <PackageReference Include="NI.Measurements.Metadata.V1.Api" />
-    <PackageReference Include="NI.SystemApi.Json" />
-    <PackageReference Include="nisysapiSupport.x64" />
   </ItemGroup>
 
 </Project>

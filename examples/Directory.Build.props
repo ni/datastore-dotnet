@@ -9,25 +9,4 @@
     <!-- Enable building these projects on Linux. -->
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
   </PropertyGroup>
-
-  <PropertyGroup>
-    <IsTestProject>$(MSBuildProjectName.StartsWith("Tests."))</IsTestProject>
-    <IsTestUtilityProject>$(MSBuildProjectName.StartsWith("TestUtilities."))</IsTestUtilityProject>
-
-    <AppTargetFramework>net8.0-windows</AppTargetFramework>
-    <TestTargetFramework>net8.0</TestTargetFramework>
-    <WindowsTestTargetFramework>net8.0-windows</WindowsTestTargetFramework>
-
-    <TestStandResultProcessorRootDirectory>$(MSBuildThisFileDirectory)</TestStandResultProcessorRootDirectory>
-    <TestStandResultProcessorSrcDirectory>$(TestStandResultProcessorRootDirectory)src\</TestStandResultProcessorSrcDirectory>
-    <BinariesRootDirectory>$(TestStandResultProcessorRootDirectory).binaries\</BinariesRootDirectory>
-    <BinariesSubDirectory Condition="'$(IsTestProject)' == 'true'">Tests\</BinariesSubDirectory>
-
-    <BaseOutputPath>$(BinariesRootDirectory)$(BinariesSubDirectory)$(MSBuildProjectName)\</BaseOutputPath>
-    <PublishDir>$(BinariesRootDirectory)Publish\$(MSBuildProjectName)\$(Configuration)\$(TargetFramework)\$(RuntimeIdentifier)\</PublishDir>
-
-    <ObjectsRootDirectory>$(TestStandResultProcessorRootDirectory).objects\</ObjectsRootDirectory>
-    <BaseIntermediateOutputPath>$(ObjectsRootDirectory)$(MSBuildProjectName)\</BaseIntermediateOutputPath>
-  </PropertyGroup>
-
 </Project>
