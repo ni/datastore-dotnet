@@ -11,8 +11,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <IsTestProject>$(MSBuildProjectName.StartsWith("Tests."))</IsTestProject>
-    <IsTestUtilityProject>$(MSBuildProjectName.StartsWith("TestUtilities."))</IsTestUtilityProject>
+    <IsTestProject>$([System.String]::Copy('$(MSBuildProjectName)').StartsWith('Tests.'))</IsTestProject>
+    <IsTestUtilityProject>$([System.String]::Copy('$(MSBuildProjectName)').StartsWith('TestUtilities.'))</IsTestUtilityProject>
 
     <AppTargetFramework>net8.0-windows</AppTargetFramework>
     <TestTargetFramework>net8.0</TestTargetFramework>
