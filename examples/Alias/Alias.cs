@@ -58,7 +58,7 @@ foreach (var alias in aliases)
 var deleted = await metadataStoreServiceClient.DeleteAliasAsync("primary_operator");
 Console.WriteLine($"\nSuccess of deleting the primary_operator alias: {deleted}.");
 
-// Query as again to verify deletion.
+// Query aliases again to verify deletion.
 aliases = await metadataStoreServiceClient.QueryAliasesAsync(string.Empty);
 Console.WriteLine("Query all aliases after deletion:");
 foreach (var alias in aliases)
