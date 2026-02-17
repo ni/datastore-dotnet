@@ -6,8 +6,6 @@
     <RootNamespace>Extension_Attributes_Example</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <!-- Disable auto-generation of assembly attributes that conflict with NI packages -->
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
 
   <ItemGroup>
