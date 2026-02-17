@@ -1,4 +1,4 @@
-# Alias Example
+# Extension Attributes Example
 
 This example demonstrates how to augment metadata entities using extension attributes. Extension attributes
 are a dictionary of attribute names to attribute values. The expected extension attributes can be specified
