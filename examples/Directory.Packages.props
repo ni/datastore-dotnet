@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageVersion Include="NI.Discovery.V1.Api" Version="$(ASWPackageVersion)" />
     <PackageVersion Include="NI.Discovery.V1.Client" Version="$(ASWPackageVersion)" />
     <PackageVersion Include="NI.Measurements.Data.V1.Api" Version="$(MDSPackageVersion)" />
     <PackageVersion Include="NI.Measurements.Metadata.V1.Api" Version="$(MDSPackageVersion)" />

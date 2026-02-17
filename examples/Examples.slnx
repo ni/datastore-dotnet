@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="Alias/Alias.csproj" />
+  <Project Path="Extension Attributes/Extension Attributes.csproj" />
+</Solution>

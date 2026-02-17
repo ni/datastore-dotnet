@@ -10,8 +10,8 @@ var metadataStoreServiceClient = clientStubFactory.CreateClient<MetadataStoreSer
 
 // Register multiple hardware schemas.
 var cableSchemaId = await metadataStoreServiceClient.RegisterSchemaFromFileAsync("cable_schema.toml");
-var socketSchemaId = await metadataStoreServiceClient.RegisterSchemaFromFileAsync("cable_schema.toml");
-var scopeSchemaId = await metadataStoreServiceClient.RegisterSchemaFromFileAsync("cable_schema.toml");
-var testResultSchemaId = await metadataStoreServiceClient.RegisterSchemaFromFileAsync("cable_schema.toml");
+var socketSchemaId = await metadataStoreServiceClient.RegisterSchemaFromFileAsync("socket_schema.toml");
+var scopeSchemaId = await metadataStoreServiceClient.RegisterSchemaFromFileAsync("scope_schema.toml");
+var testResultSchemaId = await metadataStoreServiceClient.RegisterSchemaFromFileAsync("test_result_schema.toml");
 
 // To be completed later once we've reviewed one example.
