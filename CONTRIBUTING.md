@@ -1,11 +1,11 @@
-# Contributing to \<reponame\> 
+# Contributing to datastore-dotnet 
 
-Contributions to \<reponame\> are welcome from all!
+Contributions to datastore-dotnet are welcome from all!
 
-\<reponame\> is managed via [git](https://git-scm.com), with the canonical upstream
-repository hosted on [GitHub](https://github.com/ni/<reponame>/).
+datastore-dotnet is managed via [git](https://git-scm.com), with the canonical upstream
+repository hosted on [GitHub](https://github.com/ni/datastore-dotnet/).
 
-\<reponame\> follows a pull-request model for development.  If you wish to
+datastore-dotnet follows a pull-request model for development.  If you wish to
 contribute, you will need to create a GitHub account, fork this project, push a
 branch with your changes to your project, and then submit a pull request.
 
@@ -21,11 +21,15 @@ See [GitHub's official documentation](https://help.github.com/articles/using-pul
 
 # Getting Started
 
-- TODO: include build steps here.
+To make changes or additions to the examples in this repo, follow these steps:
+- Clone the repository to your system.
+- Open and edit projects and source files as needed.
+- Submit a Pull Request with your changes.
 
 # Testing
 
-- TODO: include testing steps here.
+Currently, there are no unit or acceptance tests for this repo. When making changes to the example
+projects and source files, please ensure that they are saved in a runnable state with no known errors.
 
 # Developer Certificate of Origin (DCO)
 
