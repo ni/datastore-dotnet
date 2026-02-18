@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>AliasExample</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NI.Discovery.V1.Client" />
+    <PackageReference Include="NI.Measurements.Data.V1.Api" />
+    <PackageReference Include="NI.Measurements.Metadata.V1.Api" />
+  </ItemGroup>
+
+</Project>
