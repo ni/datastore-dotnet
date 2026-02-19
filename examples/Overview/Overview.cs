@@ -116,7 +116,7 @@ var stepId = await dataStoreServiceClient.CreateStepAsync(new Step
 });
 var measurementId = await dataStoreServiceClient.PublishMeasurementAsync("data publish sample", doubleWaveform, PrecisionDateTime.UtcNow, stepId);
 
-// Query for the published data using an OData query.
+// Retrieve the published measurement by ID.
 Console.WriteLine("Retrieving the published measurement...");
 var publishedMeasurement = await dataStoreServiceClient.GetMeasurementAsync(measurementId);
 if (publishedMeasurement != null)

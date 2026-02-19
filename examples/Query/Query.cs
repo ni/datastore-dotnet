@@ -412,7 +412,7 @@ static async Task CreateSecondPowerSupplyTestAsync(DataStoreServiceClient dataSt
     await dataStoreServiceClient.PublishConditionAsync(
         "Room Temperature",
         "Environment",
-        new Scalar { DoubleValue = random.NextDouble() * 4 + 20, Units = "°C" },
+        new Scalar { DoubleValue = random.NextDouble() * 4 + 20, Units = "deg C" },
         stepId);
 
     Console.WriteLine("Created 3 measurements for second Power Supply test");
@@ -568,10 +568,10 @@ static async Task QueryMeasurementsAsync(DataStoreServiceClient dataStoreService
             if (!string.IsNullOrEmpty(measurement.TestResultId))
             {
                 var testResult = await dataStoreServiceClient.GetTestResultAsync(measurement.TestResultId);
-                if (!string.IsNullOrEmpty(testResult.OperatorId))
+                if (testResult != null && !string.IsNullOrEmpty(testResult.OperatorId))
                 {
                     var operatorEntity = await metadataStoreServiceClient.GetOperatorAsync(testResult.OperatorId);
-                    if (operatorEntity.Name == "Alex Smith")
+                    if (operatorEntity != null && operatorEntity.Name == "Alex Smith")
                     {
                         Console.WriteLine($"{PrintMeasurementWithOutcome(measurement)} - Operator: {operatorEntity.Name}");
                     }
