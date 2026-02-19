@@ -6,14 +6,14 @@ using NationalInstruments.Protobuf.Types;
 using static NationalInstruments.Measurements.Data.V1.DataStoreService;
 using static NationalInstruments.Measurements.Metadata.V1.MetadataStoreService;
 
-var clientStubFactory = new GrpcClientStubFactory();
+using var clientStubFactory = new GrpcClientStubFactory();
 var dataStoreServiceClient = clientStubFactory.CreateClient<DataStoreServiceClient>();
 var metadataStoreServiceClient = clientStubFactory.CreateClient<MetadataStoreServiceClient>();
 
 // Register a metadata schema.
 Console.WriteLine("Registering metadata schema...");
 var currentFilePath = GetCurrentFilePath();
-var currentDirectory = Path.GetDirectoryName(currentFilePath) ?? currentFilePath;
+var currentDirectory = Path.GetDirectoryName(currentFilePath) ?? throw new InvalidOperationException("Unable to determine directory path");
 var schemaPath = Path.Combine(currentDirectory, "sample_schema.json");
 var schemaId = await metadataStoreServiceClient.RegisterSchemaFromFileAsync(schemaPath);
 
@@ -25,7 +25,7 @@ var @operator = new Operator
     Name = "John Doe",
     SchemaId = schemaId,
 };
-string operatorId = string.Empty;
+string? operatorId = null;
 try
 {
     operatorId = await metadataStoreServiceClient.CreateOperatorAsync(@operator);
@@ -49,7 +49,7 @@ var testStation = new TestStation
     SchemaId = schemaId,
 };
 testStation.Extension.Add("location", new ExtensionValue { StringValue = "Texas" });
-string testStationId = string.Empty;
+string? testStationId = null;
 try
 {
     testStationId = await metadataStoreServiceClient.CreateTestStationAsync(testStation);
@@ -74,7 +74,7 @@ var softwareItem = new SoftwareItem
     SchemaId = schemaId,
 };
 softwareItem.Extension.Add("license", new ExtensionValue { StringValue = "enterprise_LIC" });
-string softwareItemId = string.Empty;
+string? softwareItemId = null;
 try
 {
     softwareItemId = await metadataStoreServiceClient.CreateSoftwareItemAsync(softwareItem);
@@ -124,9 +124,10 @@ if (publishedMeasurement != null)
     var retrievedWaveform = await dataStoreServiceClient.ReadMeasurementValueAsync<DoubleAnalogWaveform>(publishedMeasurement.Id);
     Console.WriteLine($"Found waveform with data {retrievedWaveform.YData}.");
 }
-
-// Cleanup
-clientStubFactory.Dispose();
+else
+{
+    Console.WriteLine("Measurement not found.");
+}
 
 static string GetCurrentFilePath([System.Runtime.CompilerServices.CallerFilePath] string filePath = "")
 {

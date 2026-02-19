@@ -75,6 +75,9 @@ printSeparator();
 deleted = await metadataStoreServiceClient.DeleteAliasAsync("primary_operator");
 Console.WriteLine($"Success of deleting the primary_operator alias again: {deleted}.");
 
+// Cleanup
+clientStubFactory.Dispose();
+
 static void printAlias(Alias alias)
 {
     Console.WriteLine($"Alias Name: {alias.Name}\tTarget Type: {alias.TargetType}.");

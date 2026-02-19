@@ -28,53 +28,47 @@ const string ALIAS_SOFTWARE_NIDAQ = "Software_NI_DAQmx_23_3_0";
 const string ALIAS_UUT_INSTANCE_PS1 = "UUT_Instance_PS_001";
 const string ALIAS_UUT_INSTANCE_PS2 = "UUT_Instance_PS_002";
 const string ALIAS_UUT_INSTANCE_AMP1 = "UUT_Instance_AMP_001";
+const string ALL_ITEMS_QUERY = "";
 
 // Initialize clients
-var clientStubFactory = new GrpcClientStubFactory();
+using var clientStubFactory = new GrpcClientStubFactory();
 var dataStoreServiceClient = clientStubFactory.CreateClient<DataStoreServiceClient>();
 var metadataStoreServiceClient = clientStubFactory.CreateClient<MetadataStoreServiceClient>();
-Random random = new Random();
+var random = new Random();
 
 Console.WriteLine("=== NI Measurement Data Store Query Examples ===\n");
 
-try
+
+// Menu-driven interface
+while (true)
 {
-    // Menu-driven interface
-    while (true)
+    Console.WriteLine("\nSelect an operation:");
+    Console.WriteLine("1. Publish Sample Data");
+    Console.WriteLine("2. Query Measurements");
+    Console.WriteLine("3. Query Metadata");
+    Console.WriteLine("4. Exit");
+    Console.Write("\nEnter your choice (1-4): ");
+
+    string? choice = Console.ReadLine();
+
+    switch (choice)
     {
-        Console.WriteLine("\nSelect an operation:");
-        Console.WriteLine("1. Publish Sample Data");
-        Console.WriteLine("2. Query Measurements");
-        Console.WriteLine("3. Query Metadata");
-        Console.WriteLine("4. Exit");
-        Console.Write("\nEnter your choice (1-4): ");
-
-        string? choice = Console.ReadLine();
-
-        switch (choice)
-        {
-            case "1":
-                await PublishSampleDataAsync(dataStoreServiceClient, metadataStoreServiceClient, random);
-                break;
-            case "2":
-                await QueryMeasurementsAsync(dataStoreServiceClient, metadataStoreServiceClient, random);
-                break;
-            case "3":
-                await QueryMetadataAsync(metadataStoreServiceClient);
-                break;
-            case "4":
-                Console.WriteLine("\nExiting...");
-                return;
-            default:
-                Console.WriteLine("Invalid choice. Please try again.");
-                break;
-        }
+        case "1":
+            await PublishSampleDataAsync(dataStoreServiceClient, metadataStoreServiceClient, random);
+            break;
+        case "2":
+            await QueryMeasurementsAsync(dataStoreServiceClient, metadataStoreServiceClient, random);
+            break;
+        case "3":
+            await QueryMetadataAsync(metadataStoreServiceClient);
+            break;
+        case "4":
+            Console.WriteLine("\nExiting...");
+            return;
+        default:
+            Console.WriteLine("Invalid choice. Please try again.");
+            break;
     }
-}
-finally
-{
-    // Clean up
-    clientStubFactory.Dispose();
 }
 
 static async Task PublishSampleDataAsync(
@@ -270,7 +264,7 @@ static async Task CreatePowerSupplyTestAsync(DataStoreServiceClient dataStoreSer
         foreach (var measurementName in measurementNames)
         {
             var (value, unit) = GeneratePowerSupplyMeasurement(measurementName, random);
-            var outcome = random.NextDouble() > 0.4 ? Outcome.Passed : Outcome.Failed;
+            var outcome = GenerateRandomOutcome(random);
 
             await dataStoreServiceClient.PublishMeasurementAsync(
                 measurementName,
@@ -318,7 +312,7 @@ static async Task CreateAudioAmplifierTestAsync(DataStoreServiceClient dataStore
     amplifierTestResult.SoftwareItemIds.Add(ALIAS_SOFTWARE_PYTEST);
     amplifierTestResult.HardwareItemIds.Add(ALIAS_DMM);
     amplifierTestResult.HardwareItemIds.Add(ALIAS_SCOPE);
-    var ampTestResultId = await dataStoreServiceClient!.CreateTestResultAsync(amplifierTestResult);
+    var ampTestResultId = await dataStoreServiceClient.CreateTestResultAsync(amplifierTestResult);
 
     var amplifierSteps = new[]
     {
@@ -345,7 +339,7 @@ static async Task CreateAudioAmplifierTestAsync(DataStoreServiceClient dataStore
         foreach (var measurementName in measurementNames)
         {
             var (value, unit) = GenerateAmplifierMeasurement(measurementName, random);
-            var outcome = random.NextDouble() > 0.4 ? Outcome.Passed : Outcome.Failed;
+            var outcome = GenerateRandomOutcome(random);
 
             await dataStoreServiceClient.PublishMeasurementAsync(
                 measurementName,
@@ -379,7 +373,7 @@ static async Task CreateAudioAmplifierTestAsync(DataStoreServiceClient dataStore
     Console.WriteLine($"Created {amplifierConditions} conditions for Audio Amplifier test");
 }
 
-static async Task CreateSecondPowerSupplyTestAsync(DataStoreServiceClient dataStoreClient, Random random)
+static async Task CreateSecondPowerSupplyTestAsync(DataStoreServiceClient dataStoreServiceClient, Random random)
 {
     var powerTest2 = new TestResult
     {
@@ -391,22 +385,22 @@ static async Task CreateSecondPowerSupplyTestAsync(DataStoreServiceClient dataSt
     powerTest2.SoftwareItemIds.Add(ALIAS_SOFTWARE_PYTHON);
     powerTest2.HardwareItemIds.Add(ALIAS_DMM);
     powerTest2.HardwareItemIds.Add(ALIAS_SCOPE);
-    var psTest2ResultId = await dataStoreClient!.CreateTestResultAsync(powerTest2);
+    var psTest2ResultId = await dataStoreServiceClient.CreateTestResultAsync(powerTest2);
 
     var step = new Step
     {
         Name = "Quick Verification",
         TestResultId = psTest2ResultId,
     };
-    var stepId = await dataStoreClient.CreateStepAsync(step);
+    var stepId = await dataStoreServiceClient.CreateStepAsync(step);
 
     var quickMeasurements = new[] { "Output 5V", "Output 12V", "Load Current" };
     foreach (var measurementName in quickMeasurements)
     {
         var (value, unit) = GeneratePowerSupplyMeasurement(measurementName, random);
-        var outcome = random.NextDouble() > 0.4 ? Outcome.Passed : Outcome.Failed;
+        var outcome = GenerateRandomOutcome(random);
 
-        await dataStoreClient.PublishMeasurementAsync(
+        await dataStoreServiceClient.PublishMeasurementAsync(
             measurementName,
             new Scalar { DoubleValue = value, Units = unit },
             PrecisionDateTime.UtcNow,
@@ -415,7 +409,7 @@ static async Task CreateSecondPowerSupplyTestAsync(DataStoreServiceClient dataSt
     }
 
     // Add test condition
-    await dataStoreClient.PublishConditionAsync(
+    await dataStoreServiceClient.PublishConditionAsync(
         "Room Temperature",
         "Environment",
         new Scalar { DoubleValue = random.NextDouble() * 4 + 20, Units = "°C" },
@@ -423,6 +417,11 @@ static async Task CreateSecondPowerSupplyTestAsync(DataStoreServiceClient dataSt
 
     Console.WriteLine("Created 3 measurements for second Power Supply test");
     Console.WriteLine("Created 1 condition for second Power Supply test");
+}
+
+static Outcome GenerateRandomOutcome(Random random)
+{
+    return random.NextDouble() > 0.4 ? Outcome.Passed : Outcome.Failed;
 }
 
 static (double Value, string Unit) GeneratePowerSupplyMeasurement(string measurementName, Random random)
@@ -526,7 +525,7 @@ static async Task QueryMeasurementsAsync(DataStoreServiceClient dataStoreService
     {
         // Query failed measurements
         Console.WriteLine("1. Failed Measurements:");
-        var allMeasurements = await dataStoreServiceClient.QueryMeasurementsAsync(string.Empty);
+        var allMeasurements = await dataStoreServiceClient.QueryMeasurementsAsync(ALL_ITEMS_QUERY);
         var failedMeasurements = allMeasurements.Where(m => m.Outcome == Outcome.Failed).ToList();
 
         foreach (var measurement in failedMeasurements.Take(15))
@@ -571,7 +570,7 @@ static async Task QueryMeasurementsAsync(DataStoreServiceClient dataStoreService
                 var testResult = await dataStoreServiceClient.GetTestResultAsync(measurement.TestResultId);
                 if (!string.IsNullOrEmpty(testResult.OperatorId))
                 {
-                    var operatorEntity = await metadataStoreServiceClient!.GetOperatorAsync(testResult.OperatorId);
+                    var operatorEntity = await metadataStoreServiceClient.GetOperatorAsync(testResult.OperatorId);
                     if (operatorEntity.Name == "Alex Smith")
                     {
                         Console.WriteLine($"{PrintMeasurementWithOutcome(measurement)} - Operator: {operatorEntity.Name}");
@@ -582,7 +581,7 @@ static async Task QueryMeasurementsAsync(DataStoreServiceClient dataStoreService
 
         // Query all steps
         Console.WriteLine("\n=== Steps ===");
-        var allSteps = await dataStoreServiceClient.QueryStepsAsync(string.Empty);
+        var allSteps = await dataStoreServiceClient.QueryStepsAsync(ALL_ITEMS_QUERY);
         Console.WriteLine($"Found {allSteps.Count} steps total");
         Console.WriteLine("\nStep summary:");
 
@@ -658,7 +657,7 @@ static async Task QueryMetadataAsync(MetadataStoreServiceClient metadataStoreSer
         // Query operators
         Console.WriteLine("=== Operators ===");
         Console.WriteLine("\nFiltered operators (by name containing 'Smith'):");
-        var operatorsNamedSmith = await metadataStoreServiceClient!.QueryOperatorsAsync("$filter=contains(Name,'Smith')");
+        var operatorsNamedSmith = await metadataStoreServiceClient.QueryOperatorsAsync("$filter=contains(Name,'Smith')");
         foreach (var oper in operatorsNamedSmith)
         {
             Console.WriteLine($"  {oper.Name} ({oper.Role})");
