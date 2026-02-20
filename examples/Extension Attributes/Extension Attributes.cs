@@ -1,10 +1,14 @@
-﻿using NationalInstruments.MeasurementLink.Discovery.V1;
+﻿using NI.DataStore.Utilities;
+using NationalInstruments.MeasurementLink.Discovery.V1;
 using NationalInstruments.Measurements.Data.V1;
 using NationalInstruments.Measurements.Metadata.V1;
 using static NationalInstruments.Measurements.Data.V1.DataStoreService;
 using static NationalInstruments.Measurements.Metadata.V1.MetadataStoreService;
 
-var clientStubFactory = new GrpcClientStubFactory();
+// Initialize DataStoreContext to set up isolated environment
+using var context = new DataStoreContext();
+
+var clientStubFactory = new GrpcClientStubFactory(discoveryClient: context.CreateDiscoveryClient());
 var dataStoreServiceClient = clientStubFactory.CreateClient<DataStoreServiceClient>();
 var metadataStoreServiceClient = clientStubFactory.CreateClient<MetadataStoreServiceClient>();
 
