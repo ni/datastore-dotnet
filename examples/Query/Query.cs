@@ -1,9 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Google.Protobuf.WellKnownTypes;
 using NationalInstruments;
-using NationalInstruments.DataInfrastructure;
 using NationalInstruments.MeasurementLink.Discovery.V1;
 using NationalInstruments.Measurements.Data.V1;
 using NationalInstruments.Measurements.Metadata.V1;
@@ -96,7 +91,7 @@ static async Task PublishSampleDataAsync(
         await metadataStoreServiceClient.CreateAliasAsync(ALIAS_OPERATOR_TAYLOR, operator3);
 
         // Create Test Stations
-        Console.WriteLine("\nCreating test stations...");
+        Console.WriteLine("Creating test stations...");
         var station1 = new TestStation { Name = "TestStation_A1" };
         await metadataStoreServiceClient.CreateTestStationAsync(station1);
         await metadataStoreServiceClient.CreateAliasAsync(ALIAS_STATION_A1, station1);
@@ -110,7 +105,7 @@ static async Task PublishSampleDataAsync(
         await metadataStoreServiceClient.CreateAliasAsync(ALIAS_STATION_C3, station3);
 
         // Create Hardware Items
-        Console.WriteLine("\nCreating hardware items...");
+        Console.WriteLine("Creating hardware items...");
         var dmm = new HardwareItem
         {
             Manufacturer = "NI",
@@ -130,7 +125,7 @@ static async Task PublishSampleDataAsync(
         await metadataStoreServiceClient.CreateAliasAsync(ALIAS_SCOPE, scope);
 
         // Create UUTs
-        Console.WriteLine("\nCreating UUTs...");
+        Console.WriteLine("Creating UUTs...");
         var powerSupplyUnit = new Uut
         {
             ModelName = "PowerSupply v2.1",
@@ -148,7 +143,7 @@ static async Task PublishSampleDataAsync(
         await metadataStoreServiceClient.CreateAliasAsync(ALIAS_UUT_AMPLIFIER, amplifierUnit);
 
         // Create Software Items
-        Console.WriteLine("\nCreating software items...");
+        Console.WriteLine("Creating software items...");
         var pythonSoftware = new SoftwareItem
         {
             Product = "Python",
@@ -200,26 +195,26 @@ static async Task PublishSampleDataAsync(
         await metadataStoreServiceClient.CreateAliasAsync(ALIAS_UUT_INSTANCE_AMP1, ampInstance1);
 
         // Create Test Results with Measurements
-        Console.WriteLine("\nCreating sample test results with measurements...");
+        Console.WriteLine("Creating sample test results with measurements...");
 
         // Scenario 1: Power Supply Test
         Console.WriteLine("Creating Power Supply test...");
         await CreatePowerSupplyTestAsync(dataStoreServiceClient, random);
 
         // Scenario 2: Audio Amplifier Test
-        Console.WriteLine("\nCreating Audio Amplifier test...");
+        Console.WriteLine("Creating Audio Amplifier test...");
         await CreateAudioAmplifierTestAsync(dataStoreServiceClient, random);
 
         // Scenario 3: Second Power Supply Test
-        Console.WriteLine("\nCreating second Power Supply test...");
+        Console.WriteLine("Creating second Power Supply test...");
         await CreateSecondPowerSupplyTestAsync(dataStoreServiceClient, random);
 
-        Console.WriteLine("\nSample data creation complete!");
+        Console.WriteLine("Sample data creation complete!");
         Console.WriteLine("Ready to run query examples!");
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"\nError publishing sample data: {ex.Message}");
+        Console.WriteLine($"Error publishing sample data: {ex.Message}");
         Console.WriteLine(ex.StackTrace);
     }
 }
@@ -568,10 +563,10 @@ static async Task QueryMeasurementsAsync(DataStoreServiceClient dataStoreService
             if (!string.IsNullOrEmpty(measurement.TestResultId))
             {
                 var testResult = await dataStoreServiceClient.GetTestResultAsync(measurement.TestResultId);
-                if (testResult != null && !string.IsNullOrEmpty(testResult.OperatorId))
+                if (testResult is not null && !string.IsNullOrEmpty(testResult.OperatorId))
                 {
                     var operatorEntity = await metadataStoreServiceClient.GetOperatorAsync(testResult.OperatorId);
-                    if (operatorEntity != null && operatorEntity.Name == "Alex Smith")
+                    if (operatorEntity is not null && operatorEntity.Name == "Alex Smith")
                     {
                         Console.WriteLine($"{PrintMeasurementWithOutcome(measurement)} - Operator: {operatorEntity.Name}");
                     }

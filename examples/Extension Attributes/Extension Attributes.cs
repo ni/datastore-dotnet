@@ -3,6 +3,7 @@ using NationalInstruments.MeasurementLink.Discovery.V1;
 using NationalInstruments.Measurements.Data.V1;
 using NationalInstruments.Measurements.Metadata.V1;
 using NationalInstruments.Protobuf.Types;
+using System.Reflection;
 using static NationalInstruments.Measurements.Data.V1.DataStoreService;
 using static NationalInstruments.Measurements.Metadata.V1.MetadataStoreService;
 
@@ -33,8 +34,8 @@ var cable = new HardwareItem
     SerialNumber = "7u2349",
     SchemaId = cableSchemaId
 };
-cable.Extension.Add("cable_length", new ExtensionValue { StringValue = "1.5" });
-cable.Extension.Add("manufacture_date", new ExtensionValue { StringValue = "2023-01-01" });
+cable.Extension["cable_length"] = new ExtensionValue { StringValue = "1.5" };
+cable.Extension["manufacture_date"] = new ExtensionValue { StringValue = "2023-01-01" };
 
 // Create a hardware item that follows the socket schema.
 var socket = new HardwareItem
@@ -43,8 +44,8 @@ var socket = new HardwareItem
     Model = "socket",
     SchemaId = socketSchemaId,
 };
-socket.Extension.Add("socket_number", new ExtensionValue { StringValue = "1.5" });
-socket.Extension.Add("manufacture_date", new ExtensionValue { StringValue = "2024-05-01" });
+socket.Extension["socket_number"] = new ExtensionValue { StringValue = "1.5" };
+socket.Extension["manufacture_date"] = new ExtensionValue { StringValue = "2024-05-01" };
 
 // Create a hardware item that follows the scope schema.
 var scope = new HardwareItem
@@ -71,7 +72,8 @@ var testResultId = await dataStoreServiceClient.CreateTestResultAsync(new TestRe
 // Create some AnalogWaveform data to publish
 var doubleWaveform = new DoubleAnalogWaveform
 {
-    Dt = 0.001
+    Dt = 0.001,
+    T0 = PrecisionDateTime.UtcNow.ToPrecisionTimestamp(),
 };
 doubleWaveform.YData.AddRange(new double[] { 1.0, 2.0, 3.0 });
 
@@ -89,10 +91,10 @@ Console.WriteLine("Finished publishing waveform data.");
 Console.WriteLine("Querying for published measurements...");
 var oDataQuery = "$filter=testresult/hardwareitems/any (h: h/extension/cable_length eq '1.5') and Name eq 'scope reading'";
 var publishedMeasurements = await dataStoreServiceClient.QueryMeasurementsAsync(oDataQuery);
-if (publishedMeasurements.Count > 0)
+var foundMeasurement = publishedMeasurements.FirstOrDefault();
+if (foundMeasurement is not null)
 {
-    var measurement = publishedMeasurements[0];
-    var retrievedWaveform = await dataStoreServiceClient.ReadMeasurementValueAsync<DoubleAnalogWaveform>(measurement.Id);
+    var retrievedWaveform = await dataStoreServiceClient.ReadMeasurementValueAsync<DoubleAnalogWaveform>(foundMeasurement.Id);
     Console.WriteLine($"Retrieved waveform with data {retrievedWaveform.YData}.");
 }
 else
@@ -102,5 +104,6 @@ else
 
 static string GetCurrentFilePath([System.Runtime.CompilerServices.CallerFilePath] string filePath = "")
 {
+    // Return the path of this .cs file.
     return filePath;
 }

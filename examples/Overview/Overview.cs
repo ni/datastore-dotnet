@@ -37,7 +37,7 @@ catch (Exception ex)
 
 // Add the required badge number and recreate.
 Console.WriteLine("Adding badge number and retrying...\n");
-@operator.Extension.Add("badge_number", new ExtensionValue { StringValue = "emp-128256" });
+@operator.Extension["badge_number"] = new ExtensionValue { StringValue = "emp-128256" };
 operatorId = await metadataStoreServiceClient.CreateOperatorAsync(@operator);
 
 // Create a test station with an invalid location extension attribute.
@@ -48,7 +48,7 @@ var testStation = new TestStation
     Name = "TestStation_12",
     SchemaId = schemaId,
 };
-testStation.Extension.Add("location", new ExtensionValue { StringValue = "Texas" });
+testStation.Extension["location"] = new ExtensionValue { StringValue = "Texas" };
 string? testStationId = null;
 try
 {
@@ -73,7 +73,7 @@ var softwareItem = new SoftwareItem
     Version = "10.0.19044",
     SchemaId = schemaId,
 };
-softwareItem.Extension.Add("license", new ExtensionValue { StringValue = "enterprise_LIC" });
+softwareItem.Extension["license"] = new ExtensionValue { StringValue = "enterprise_LIC" };
 string? softwareItemId = null;
 try
 {
@@ -99,14 +99,15 @@ var testResult = new TestResult
     SchemaId = schemaId,
 };
 testResult.SoftwareItemIds.Add(softwareItemId);
-testResult.Extension.Add("session_file_path", new ExtensionValue { StringValue = "C:\\my_test_description.xlsx" });
+testResult.Extension["session_file_path"] = new ExtensionValue { StringValue = "C:\\my_test_description.xlsx" };
 var testResultId = await dataStoreServiceClient.CreateTestResultAsync(testResult);
 
 // Publish waveform data for the created test result.
 Console.WriteLine("Publishing waveform data for the created test result...");
 var doubleWaveform = new DoubleAnalogWaveform
 {
-    Dt = 0.001
+    Dt = 0.001,
+    T0 = PrecisionDateTime.UtcNow.ToPrecisionTimestamp(),
 };
 doubleWaveform.YData.AddRange(new double[] { 1.0, 2.0, 3.0 });
 var stepId = await dataStoreServiceClient.CreateStepAsync(new Step
@@ -119,7 +120,7 @@ var measurementId = await dataStoreServiceClient.PublishMeasurementAsync("data p
 // Retrieve the published measurement by ID.
 Console.WriteLine("Retrieving the published measurement...");
 var publishedMeasurement = await dataStoreServiceClient.GetMeasurementAsync(measurementId);
-if (publishedMeasurement != null)
+if (publishedMeasurement is not null)
 {
     var retrievedWaveform = await dataStoreServiceClient.ReadMeasurementValueAsync<DoubleAnalogWaveform>(publishedMeasurement.Id);
     Console.WriteLine($"Found waveform with data {retrievedWaveform.YData}.");
