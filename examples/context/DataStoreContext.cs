@@ -40,7 +40,7 @@ namespace NI.DataStore.Utilities
     public class DataStoreContext : IDisposable
     {
         // Environment variable names
-        private const string DISCOVERY_SERVICE_CLUSTER_ID_ENV_VAR = "NIDISCOVERY_CLUSTERID";
+        private const string DISCOVERY_SERVICE_CLUSTER_ID_ENV_VAR = "NIDiscovery_ClusterId";
         private const string DATA_STORE_DATABASE_PATH_ENV_VAR = "NIDATASTORE_DATASTORESETTINGS__SQLITEDATABASEPATH";
         private const string DATA_STORE_DATA_FILES_DIRECTORY_PATH_ENV_VAR = "NIDATASTORE_DATASTORESETTINGS__DATAFILESDIRECTORY";
         private const string DATA_STORE_INGEST_DIRECTORY_PATH_ENV_VAR = "NIDATASTORE_DATASTORESETTINGS__INGESTDIRECTORY";
@@ -211,20 +211,27 @@ namespace NI.DataStore.Utilities
                 return _baseDirectoryPath;
             }
 
-            // Get the directory containing this assembly
-            string? assemblyLocation = Path.GetDirectoryName(
-                System.Reflection.Assembly.GetExecutingAssembly().Location);
-            
-            if (assemblyLocation == null)
+            // The location of the example data should shared among all
+            // examples, so we place it in a known location relative to the
+            // source code. We can't use the current working directory since
+            // that can be different based on how the example is run, and we
+            // can't use a temp directory since we want the data to persist
+            // across runs of different examples.
+            var thisFilePath = GetPathToThisFile();
+            var thisDirectory = Path.GetDirectoryName(thisFilePath);
+            if (thisDirectory == null)
             {
-                throw new InvalidOperationException("Could not determine assembly location");
+                throw new InvalidOperationException("Could not determine directory of this file");
             }
 
-            // Navigate up to find a reasonable root (or use current directory as fallback)
-            // In the Python version, it goes up 3 levels from the utilities module
-            // For C#, we'll use the current directory or a specified temp location
-            string currentDir = Directory.GetCurrentDirectory();
-            return Path.Combine(currentDir, DEFAULT_FOLDER_NAME);
+            var parentInfo = Directory.GetParent(thisDirectory);
+            if (parentInfo == null)
+            {
+                throw new InvalidOperationException("Could not determine parent directory");
+            }
+
+            var examplesDirectory = parentInfo.FullName;
+            return Path.Combine(examplesDirectory, DEFAULT_FOLDER_NAME);
         }
 
         private void RestoreEnvironment()
@@ -245,6 +252,11 @@ namespace NI.DataStore.Utilities
                     Environment.SetEnvironmentVariable(environmentVariable, originalValue);
                 }
             }
+        }
+
+        private static string GetPathToThisFile([System.Runtime.CompilerServices.CallerFilePath] string filePath = "")
+        {
+            return filePath;
         }
     }
 }

@@ -8,8 +8,7 @@ using static NationalInstruments.Measurements.Metadata.V1.MetadataStoreService;
 // Initialize DataStoreContext to set up isolated environment
 using var context = new DataStoreContext();
 
-var clientStubFactory = new GrpcClientStubFactory(discoveryClient: context.CreateDiscoveryClient());
-// var clientStubFactory = new GrpcClientStubFactory();
+using var clientStubFactory = new GrpcClientStubFactory();
 var dataStoreServiceClient = clientStubFactory.CreateClient<DataStoreServiceClient>();
 var metadataStoreServiceClient = clientStubFactory.CreateClient<MetadataStoreServiceClient>();
 
