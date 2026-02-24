@@ -6,9 +6,5 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-
-   <ItemGroup>
-      <PackageReference Include="NI.Discovery.V1.Client" />
-   </ItemGroup>
 	
 </Project>

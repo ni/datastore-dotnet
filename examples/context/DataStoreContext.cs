@@ -1,7 +1,3 @@
-using NationalInstruments.MeasurementLink.Discovery.V1;
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -11,32 +7,6 @@ namespace NI.DataStore.Utilities
     /// A context manager for running a data store in an isolated environment.
     /// Implements IDisposable to support the 'using' statement pattern.
     /// </summary>
-    /// <example>
-    /// <code>
-    /// // Using statement pattern (recommended)
-    /// using (var context = new DataStoreContext())
-    /// {
-    ///     // Your data store operations here
-    /// }
-    /// 
-    /// // Or with C# 8.0+ using declaration
-    /// using var context = new DataStoreContext();
-    /// // Your data store operations here
-    /// // Context is automatically disposed at end of scope
-    /// 
-    /// // Or manual initialization/cleanup
-    /// var context = new DataStoreContext();
-    /// context.Initialize();
-    /// try
-    /// {
-    ///     // Your data store operations here
-    /// }
-    /// finally
-    /// {
-    ///     context.Close();
-    /// }
-    /// </code>
-    /// </example>
     public class DataStoreContext : IDisposable
     {
         // Environment variable names
@@ -111,16 +81,6 @@ namespace NI.DataStore.Utilities
         {
             return GetBaseDirectoryHash();
         }
-
-        public IDiscoveryClient CreateDiscoveryClient()
-        {
-            var discoveryClientSettings = new DiscoveryClientSettings
-            {
-                ClusterId = GetClusterId()
-            };
-            return new DiscoveryClient(discoveryClientSettings);
-        }
-
 
         /// <summary>
         /// Protected implementation of Dispose pattern.
