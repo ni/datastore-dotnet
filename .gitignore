@@ -677,3 +677,8 @@ src/teststand-result-processor/tests/**/*[[]*.xml*
 
 # pnpm
 .pnpm-store/
+
+##########################
+# Temporary data locations
+##########################
+*temp_data
