@@ -4,8 +4,8 @@ using NationalInstruments.Measurements.Metadata.V1;
 using static NationalInstruments.Measurements.Data.V1.DataStoreService;
 using static NationalInstruments.Measurements.Metadata.V1.MetadataStoreService;
 
-
-var clientStubFactory = new GrpcClientStubFactory();
+// This using statement will ensure that the client stub factory is properly disposed.
+using var clientStubFactory = new GrpcClientStubFactory();
 var dataStoreServiceClient = clientStubFactory.CreateClient<DataStoreServiceClient>();
 var metadataStoreServiceClient = clientStubFactory.CreateClient<MetadataStoreServiceClient>();
 
