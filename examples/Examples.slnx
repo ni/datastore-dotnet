@@ -2,4 +2,6 @@
   <Project Path="Alias/Alias.csproj" />
   <Project Path="Extension Attributes/Extension Attributes.csproj" />
   <Project Path="context/DataStoreContext.csproj" />
+  <Project Path="Overview/Overview.csproj" />
+  <Project Path="Query/Query.csproj" />
 </Solution>
