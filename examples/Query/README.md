@@ -1,7 +1,7 @@
 # Query Example
 
 This example demonstrates how to perform queries to find data and metadata
-objects. These queries are often specified using an oData filter string,
+objects. These queries are often specified using an OData filter string,
 which is a common syntax for expressing queries.
 
 ## Running this example
