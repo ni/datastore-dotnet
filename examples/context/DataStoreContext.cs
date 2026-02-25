@@ -170,7 +170,7 @@ namespace NationalInstruments.DataStore.Utilities
                 return _baseDirectoryPath;
             }
 
-            // The location of the example data should shared among all
+            // The location of the example data should be shared among all
             // examples, so we place it in a known location relative to the
             // source code. We can't use the current working directory since
             // that can be different based on how the example is run, and we

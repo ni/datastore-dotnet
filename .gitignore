@@ -664,9 +664,6 @@ coverage/
 allure-results/
 allure-report/
 
-# Manual test reports and generated test files
-src/teststand-result-processor/tests/**/*[[]*.xml*
-
 ####################
 # Build artifacts
 ####################
