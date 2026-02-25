@@ -34,7 +34,7 @@ The class manages the following environment variables:
 ### Option 1: Using Statement (Recommended - C# 8.0+)
 
 ```csharp
-using NI.DataStore.Utilities;
+using NationalInstruments.DataStore.Utilities;
 
 // Modern C# using declaration
 using var context = new DataStoreContext();
@@ -46,7 +46,7 @@ using var context = new DataStoreContext();
 ### Option 2: Using Block
 
 ```csharp
-using NI.DataStore.Utilities;
+using NationalInstruments.DataStore.Utilities;
 
 using (var context = new DataStoreContext())
 {
@@ -58,7 +58,7 @@ using (var context = new DataStoreContext())
 ### Option 3: Manual Initialization and Cleanup
 
 ```csharp
-using NI.DataStore.Utilities;
+using NationalInstruments.DataStore.Utilities;
 
 var context = new DataStoreContext();
 context.Initialize();
@@ -75,7 +75,7 @@ finally
 ### With Custom Base Directory
 
 ```csharp
-using NI.DataStore.Utilities;
+using NationalInstruments.DataStore.Utilities;
 
 using var context = new DataStoreContext(@"C:\MyCustomDataPath");
 // All data store files will be created under C:\MyCustomDataPath
