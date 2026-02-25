@@ -1,7 +1,7 @@
 # Extension Attributes Example
 
 This example demonstrates how to specify extension attributes on metadata
-objects. It also shows how to perform an oData query that filters on an extension attribute.
+objects. It also shows how to perform an OData query that filters on an extension attribute.
 
 ## Running this example
 
