@@ -7,25 +7,26 @@ using static NationalInstruments.Measurements.Data.V1.DataStoreService;
 using static NationalInstruments.Measurements.Metadata.V1.MetadataStoreService;
 
 // Alias constants
-const string ALIAS_OPERATOR_ALEX = "Operator_Alex_Smith";
-const string ALIAS_OPERATOR_JORDAN = "Operator_Jordan_Chen";
-const string ALIAS_OPERATOR_TAYLOR = "Operator_Taylor_Johnson";
-const string ALIAS_STATION_A1 = "Station_A1";
-const string ALIAS_STATION_B2 = "Station_B2";
-const string ALIAS_STATION_C3 = "Station_C3";
-const string ALIAS_DMM = "DMM_PXIe4081";
-const string ALIAS_SCOPE = "Scope_PXIe5171";
-const string ALIAS_UUT_POWER_SUPPLY = "UUT_PowerSupply_v2_1";
-const string ALIAS_UUT_AMPLIFIER = "UUT_AudioAmplifier_v1_3";
-const string ALIAS_SOFTWARE_PYTHON = "Software_Python_3_11_5";
-const string ALIAS_SOFTWARE_PYTEST = "Software_pytest_7_4_0";
-const string ALIAS_SOFTWARE_NIDAQ = "Software_NI_DAQmx_23_3_0";
-const string ALIAS_UUT_INSTANCE_PS1 = "UUT_Instance_PS_001";
-const string ALIAS_UUT_INSTANCE_PS2 = "UUT_Instance_PS_002";
-const string ALIAS_UUT_INSTANCE_AMP1 = "UUT_Instance_AMP_001";
-const string ALL_ITEMS_QUERY = "";
+const string AliasOperatorAlex = "Operator_Alex_Smith";
+const string AliasOperatorJordan = "Operator_Jordan_Chen";
+const string AliasOperatorTaylor = "Operator_Taylor_Johnson";
+const string AliasStationA1 = "Station_A1";
+const string AliasStationB2 = "Station_B2";
+const string AliasStationC3 = "Station_C3";
+const string AliasDmm = "DMM_PXIe4081";
+const string AliasScope = "Scope_PXIe5171";
+const string AliasUutPowerSupply = "UUT_PowerSupply_v2_1";
+const string AliasUutAudioAmplifier = "UUT_AudioAmplifier_v1_3";
+const string AliasSoftwarePython = "Software_Python_3_11_5";
+const string AliasSoftwarePytest = "Software_pytest_7_4_0";
+const string AliasSoftwareNIDaq = "Software_NI_DAQmx_23_3_0";
+const string AliasUutInstancePs1 = "UUT_Instance_PS_001";
+const string AliasUutInstancePs2 = "UUT_Instance_PS_002";
+const string AliasUutInstanceAmp1 = "UUT_Instance_AMP_001";
+const string AllItemsQuery = "";
 
 // Initialize clients
+// This using statement will ensure that the client stub factory is properly disposed.
 using var clientStubFactory = new GrpcClientStubFactory();
 var dataStoreServiceClient = clientStubFactory.CreateClient<DataStoreServiceClient>();
 var metadataStoreServiceClient = clientStubFactory.CreateClient<MetadataStoreServiceClient>();
@@ -37,12 +38,16 @@ Console.WriteLine("=== NI Measurement Data Store Query Examples ===\n");
 // Menu-driven interface
 while (true)
 {
-    Console.WriteLine("\nSelect an operation:");
-    Console.WriteLine("1. Publish Sample Data");
-    Console.WriteLine("2. Query Measurements");
-    Console.WriteLine("3. Query Metadata");
-    Console.WriteLine("4. Exit");
-    Console.Write("\nEnter your choice (1-4): ");
+    Console.WriteLine("""
+
+    Select an operation:
+    1. Publish Sample Data
+    2. Query Measurements
+    3. Query Metadata
+    4. Exit
+
+    Enter your choice (1-4): 
+    """);
 
     string? choice = Console.ReadLine();
 
@@ -80,29 +85,29 @@ static async Task PublishSampleDataAsync(
         Console.WriteLine("Creating operators...");
         var operator1 = new Operator { Name = "Alex Smith", Role = "Test Engineer" };
         await metadataStoreServiceClient.CreateOperatorAsync(operator1);
-        await metadataStoreServiceClient.CreateAliasAsync(ALIAS_OPERATOR_ALEX, operator1);
+        await metadataStoreServiceClient.CreateAliasAsync(AliasOperatorAlex, operator1);
 
         var operator2 = new Operator { Name = "Jordan Chen", Role = "Senior Test Engineer" };
         await metadataStoreServiceClient.CreateOperatorAsync(operator2);
-        await metadataStoreServiceClient.CreateAliasAsync(ALIAS_OPERATOR_JORDAN, operator2);
+        await metadataStoreServiceClient.CreateAliasAsync(AliasOperatorJordan, operator2);
 
         var operator3 = new Operator { Name = "Taylor Johnson", Role = "Lab Technician" };
         await metadataStoreServiceClient.CreateOperatorAsync(operator3);
-        await metadataStoreServiceClient.CreateAliasAsync(ALIAS_OPERATOR_TAYLOR, operator3);
+        await metadataStoreServiceClient.CreateAliasAsync(AliasOperatorTaylor, operator3);
 
         // Create Test Stations
         Console.WriteLine("Creating test stations...");
         var station1 = new TestStation { Name = "TestStation_A1" };
         await metadataStoreServiceClient.CreateTestStationAsync(station1);
-        await metadataStoreServiceClient.CreateAliasAsync(ALIAS_STATION_A1, station1);
+        await metadataStoreServiceClient.CreateAliasAsync(AliasStationA1, station1);
 
         var station2 = new TestStation { Name = "TestStation_B2" };
         await metadataStoreServiceClient.CreateTestStationAsync(station2);
-        await metadataStoreServiceClient.CreateAliasAsync(ALIAS_STATION_B2, station2);
+        await metadataStoreServiceClient.CreateAliasAsync(AliasStationB2, station2);
 
         var station3 = new TestStation { Name = "TestStation_C3" };
         await metadataStoreServiceClient.CreateTestStationAsync(station3);
-        await metadataStoreServiceClient.CreateAliasAsync(ALIAS_STATION_C3, station3);
+        await metadataStoreServiceClient.CreateAliasAsync(AliasStationC3, station3);
 
         // Create Hardware Items
         Console.WriteLine("Creating hardware items...");
@@ -113,7 +118,7 @@ static async Task PublishSampleDataAsync(
             SerialNumber = "DMM001"
         };
         await metadataStoreServiceClient.CreateHardwareItemAsync(dmm);
-        await metadataStoreServiceClient.CreateAliasAsync(ALIAS_DMM, dmm);
+        await metadataStoreServiceClient.CreateAliasAsync(AliasDmm, dmm);
 
         var scope = new HardwareItem
         {
@@ -122,7 +127,7 @@ static async Task PublishSampleDataAsync(
             SerialNumber = "SCOPE001"
         };
         await metadataStoreServiceClient.CreateHardwareItemAsync(scope);
-        await metadataStoreServiceClient.CreateAliasAsync(ALIAS_SCOPE, scope);
+        await metadataStoreServiceClient.CreateAliasAsync(AliasScope, scope);
 
         // Create UUTs
         Console.WriteLine("Creating UUTs...");
@@ -132,7 +137,7 @@ static async Task PublishSampleDataAsync(
             Family = "Power"
         };
         await metadataStoreServiceClient.CreateUutAsync(powerSupplyUnit);
-        await metadataStoreServiceClient.CreateAliasAsync(ALIAS_UUT_POWER_SUPPLY, powerSupplyUnit);
+        await metadataStoreServiceClient.CreateAliasAsync(AliasUutPowerSupply, powerSupplyUnit);
 
         var amplifierUnit = new Uut
         {
@@ -140,7 +145,7 @@ static async Task PublishSampleDataAsync(
             Family = "Audio"
         };
         await metadataStoreServiceClient.CreateUutAsync(amplifierUnit);
-        await metadataStoreServiceClient.CreateAliasAsync(ALIAS_UUT_AMPLIFIER, amplifierUnit);
+        await metadataStoreServiceClient.CreateAliasAsync(AliasUutAudioAmplifier, amplifierUnit);
 
         // Create Software Items
         Console.WriteLine("Creating software items...");
@@ -150,7 +155,7 @@ static async Task PublishSampleDataAsync(
             Version = "3.11.5"
         };
         await metadataStoreServiceClient.CreateSoftwareItemAsync(pythonSoftware);
-        await metadataStoreServiceClient.CreateAliasAsync(ALIAS_SOFTWARE_PYTHON, pythonSoftware);
+        await metadataStoreServiceClient.CreateAliasAsync(AliasSoftwarePython, pythonSoftware);
 
         var pythonTestSoftware = new SoftwareItem
         {
@@ -158,7 +163,7 @@ static async Task PublishSampleDataAsync(
             Version = "7.4.0"
         };
         await metadataStoreServiceClient.CreateSoftwareItemAsync(pythonTestSoftware);
-        await metadataStoreServiceClient.CreateAliasAsync(ALIAS_SOFTWARE_PYTEST, pythonTestSoftware);
+        await metadataStoreServiceClient.CreateAliasAsync(AliasSoftwarePytest, pythonTestSoftware);
 
         var daqSoftware = new SoftwareItem
         {
@@ -166,33 +171,33 @@ static async Task PublishSampleDataAsync(
             Version = "23.3.0"
         };
         await metadataStoreServiceClient.CreateSoftwareItemAsync(daqSoftware);
-        await metadataStoreServiceClient.CreateAliasAsync(ALIAS_SOFTWARE_NIDAQ, daqSoftware);
+        await metadataStoreServiceClient.CreateAliasAsync(AliasSoftwareNIDaq, daqSoftware);
 
         // Create UUT Instances
         Console.WriteLine("\nCreating UUT instances...");
         var psInstance1 = new UutInstance
         {
-            UutId = ALIAS_UUT_POWER_SUPPLY,
+            UutId = AliasUutPowerSupply,
             SerialNumber = "PS-2024-001"
         };
         await metadataStoreServiceClient.CreateUutInstanceAsync(psInstance1);
-        await metadataStoreServiceClient.CreateAliasAsync(ALIAS_UUT_INSTANCE_PS1, psInstance1);
+        await metadataStoreServiceClient.CreateAliasAsync(AliasUutInstancePs1, psInstance1);
 
         var psInstance2 = new UutInstance
         {
-            UutId = ALIAS_UUT_POWER_SUPPLY,
+            UutId = AliasUutPowerSupply,
             SerialNumber = "PS-2024-002"
         };
         await metadataStoreServiceClient.CreateUutInstanceAsync(psInstance2);
-        await metadataStoreServiceClient.CreateAliasAsync(ALIAS_UUT_INSTANCE_PS2, psInstance2);
+        await metadataStoreServiceClient.CreateAliasAsync(AliasUutInstancePs2, psInstance2);
 
         var ampInstance1 = new UutInstance
         {
-            UutId = ALIAS_UUT_AMPLIFIER,
+            UutId = AliasUutAudioAmplifier,
             SerialNumber = "AMP-2024-001"
         };
         await metadataStoreServiceClient.CreateUutInstanceAsync(ampInstance1);
-        await metadataStoreServiceClient.CreateAliasAsync(ALIAS_UUT_INSTANCE_AMP1, ampInstance1);
+        await metadataStoreServiceClient.CreateAliasAsync(AliasUutInstanceAmp1, ampInstance1);
 
         // Create Test Results with Measurements
         Console.WriteLine("Creating sample test results with measurements...");
@@ -224,14 +229,14 @@ static async Task CreatePowerSupplyTestAsync(DataStoreServiceClient dataStoreSer
     // Create power supply test result
     var powerTestResult = new TestResult
     {
-        UutInstanceId = ALIAS_UUT_INSTANCE_PS1,
-        OperatorId = ALIAS_OPERATOR_ALEX,
-        TestStationId = ALIAS_STATION_A1,
+        UutInstanceId = AliasUutInstancePs1,
+        OperatorId = AliasOperatorAlex,
+        TestStationId = AliasStationA1,
         Name = "Power Supply Test v2.1"
     };
-    powerTestResult.SoftwareItemIds.Add(ALIAS_SOFTWARE_PYTHON);
-    powerTestResult.HardwareItemIds.Add(ALIAS_DMM);
-    powerTestResult.HardwareItemIds.Add(ALIAS_SCOPE);
+    powerTestResult.SoftwareItemIds.Add(AliasSoftwarePython);
+    powerTestResult.HardwareItemIds.Add(AliasDmm);
+    powerTestResult.HardwareItemIds.Add(AliasScope);
     var psTestResultId = await dataStoreServiceClient.CreateTestResultAsync(powerTestResult);
 
     // Define power supply test steps
@@ -299,14 +304,14 @@ static async Task CreateAudioAmplifierTestAsync(DataStoreServiceClient dataStore
 {
     var amplifierTestResult = new TestResult
     {
-        UutInstanceId = ALIAS_UUT_INSTANCE_AMP1,
-        OperatorId = ALIAS_OPERATOR_JORDAN,
-        TestStationId = ALIAS_STATION_B2,
+        UutInstanceId = AliasUutInstanceAmp1,
+        OperatorId = AliasOperatorJordan,
+        TestStationId = AliasStationB2,
         Name = "Audio Amplifier Test v1.3"
     };
-    amplifierTestResult.SoftwareItemIds.Add(ALIAS_SOFTWARE_PYTEST);
-    amplifierTestResult.HardwareItemIds.Add(ALIAS_DMM);
-    amplifierTestResult.HardwareItemIds.Add(ALIAS_SCOPE);
+    amplifierTestResult.SoftwareItemIds.Add(AliasSoftwarePytest);
+    amplifierTestResult.HardwareItemIds.Add(AliasDmm);
+    amplifierTestResult.HardwareItemIds.Add(AliasScope);
     var ampTestResultId = await dataStoreServiceClient.CreateTestResultAsync(amplifierTestResult);
 
     var amplifierSteps = new[]
@@ -372,14 +377,14 @@ static async Task CreateSecondPowerSupplyTestAsync(DataStoreServiceClient dataSt
 {
     var powerTest2 = new TestResult
     {
-        UutInstanceId = ALIAS_UUT_INSTANCE_PS2,
-        OperatorId = ALIAS_OPERATOR_TAYLOR,
-        TestStationId = ALIAS_STATION_C3,
+        UutInstanceId = AliasUutInstancePs2,
+        OperatorId = AliasOperatorTaylor,
+        TestStationId = AliasStationC3,
         Name = "Power Supply Test v2.1"
     };
-    powerTest2.SoftwareItemIds.Add(ALIAS_SOFTWARE_PYTHON);
-    powerTest2.HardwareItemIds.Add(ALIAS_DMM);
-    powerTest2.HardwareItemIds.Add(ALIAS_SCOPE);
+    powerTest2.SoftwareItemIds.Add(AliasSoftwarePython);
+    powerTest2.HardwareItemIds.Add(AliasDmm);
+    powerTest2.HardwareItemIds.Add(AliasScope);
     var psTest2ResultId = await dataStoreServiceClient.CreateTestResultAsync(powerTest2);
 
     var step = new Step
@@ -520,7 +525,7 @@ static async Task QueryMeasurementsAsync(DataStoreServiceClient dataStoreService
     {
         // Query failed measurements
         Console.WriteLine("1. Failed Measurements:");
-        var allMeasurements = await dataStoreServiceClient.QueryMeasurementsAsync(ALL_ITEMS_QUERY);
+        var allMeasurements = await dataStoreServiceClient.QueryMeasurementsAsync(AllItemsQuery);
         var failedMeasurements = allMeasurements.Where(m => m.Outcome == Outcome.Failed).ToList();
 
         foreach (var measurement in failedMeasurements.Take(15))
@@ -576,7 +581,7 @@ static async Task QueryMeasurementsAsync(DataStoreServiceClient dataStoreService
 
         // Query all steps
         Console.WriteLine("\n=== Steps ===");
-        var allSteps = await dataStoreServiceClient.QueryStepsAsync(ALL_ITEMS_QUERY);
+        var allSteps = await dataStoreServiceClient.QueryStepsAsync(AllItemsQuery);
         Console.WriteLine($"Found {allSteps.Count} steps total");
         Console.WriteLine("\nStep summary:");
 
@@ -638,9 +643,7 @@ static async Task QueryMeasurementsAsync(DataStoreServiceClient dataStoreService
 static string PrintMeasurementWithOutcome(PublishedMeasurement measurement)
 {
     var name = measurement.Name ?? "Unnamed Measurement";
-    var passed = measurement.Outcome == Outcome.Passed;
-    var failed = measurement.Outcome == Outcome.Failed;
-    return $"{name} - {(passed ? "(Passed)" : failed ? "(Failed)" : "(Unknown)")}";
+    return $"{name} - {measurement.Outcome}";
 }
 
 static async Task QueryMetadataAsync(MetadataStoreServiceClient metadataStoreServiceClient)
@@ -653,16 +656,16 @@ static async Task QueryMetadataAsync(MetadataStoreServiceClient metadataStoreSer
         Console.WriteLine("=== Operators ===");
         Console.WriteLine("\nFiltered operators (by name containing 'Smith'):");
         var operatorsNamedSmith = await metadataStoreServiceClient.QueryOperatorsAsync("$filter=contains(Name,'Smith')");
-        foreach (var oper in operatorsNamedSmith)
+        foreach (var @operator in operatorsNamedSmith)
         {
-            Console.WriteLine($"  {oper.Name} ({oper.Role})");
+            Console.WriteLine($"  {@operator.Name} ({@operator.Role})");
         }
 
         Console.WriteLine("\nFiltered operators (by role containing 'Test Engineer'):");
         var testEngineerOperators = await metadataStoreServiceClient.QueryOperatorsAsync("$filter=contains(Role,'Test Engineer')");
-        foreach (var oper in testEngineerOperators)
+        foreach (var @operator in testEngineerOperators)
         {
-            Console.WriteLine($"  {oper.Name} ({oper.Role})");
+            Console.WriteLine($"  {@operator.Name} ({@operator.Role})");
         }
 
         // Query test stations

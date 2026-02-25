@@ -6,66 +6,37 @@ using NationalInstruments.Protobuf.Types;
 using static NationalInstruments.Measurements.Data.V1.DataStoreService;
 using static NationalInstruments.Measurements.Metadata.V1.MetadataStoreService;
 
+// This using statement will ensure that the client stub factory is properly disposed.
 using var clientStubFactory = new GrpcClientStubFactory();
 var dataStoreServiceClient = clientStubFactory.CreateClient<DataStoreServiceClient>();
 var metadataStoreServiceClient = clientStubFactory.CreateClient<MetadataStoreServiceClient>();
 
 // Register a metadata schema.
 Console.WriteLine("Registering metadata schema...");
-var currentFilePath = GetCurrentFilePath();
-var currentDirectory = Path.GetDirectoryName(currentFilePath) ?? throw new InvalidOperationException("Unable to determine directory path");
-var schemaPath = Path.Combine(currentDirectory, "sample_schema.json");
-var schemaId = await metadataStoreServiceClient.RegisterSchemaFromFileAsync(schemaPath);
+var appDirectory = AppDomain.CurrentDomain.BaseDirectory;
+var schemaId = await metadataStoreServiceClient.RegisterSchemaFromFileAsync(Path.Combine(appDirectory, "sample_schema.json"));
 
-// Invalid creation of operator - no badge number provided.
-// This will result in an exception that we will catch below.
+// Create an operator with a badge number extension attribute.
 Console.WriteLine("Creating operator...");
 var @operator = new Operator
 {
     Name = "John Doe",
     SchemaId = schemaId,
 };
-string? operatorId = null;
-try
-{
-    operatorId = await metadataStoreServiceClient.CreateOperatorAsync(@operator);
-}
-catch (Exception ex)
-{
-    Console.WriteLine($"Failed to create operator: {ex.Message}\n");
-}
-
-// Add the required badge number and recreate.
-Console.WriteLine("Adding badge number and retrying...\n");
 @operator.Extension["badge_number"] = new ExtensionValue { StringValue = "emp-128256" };
-operatorId = await metadataStoreServiceClient.CreateOperatorAsync(@operator);
+var operatorId = await metadataStoreServiceClient.CreateOperatorAsync(@operator);
 
-// Create a test station with an invalid location extension attribute.
-// This will result in an exception that we will catch below.
+// Create a test station with a valid location extension attribute.
 Console.WriteLine("Creating test station...");
 var testStation = new TestStation
 {
     Name = "TestStation_12",
     SchemaId = schemaId,
 };
-testStation.Extension["location"] = new ExtensionValue { StringValue = "Texas" };
-string? testStationId = null;
-try
-{
-    testStationId = await metadataStoreServiceClient.CreateTestStationAsync(testStation);
-}
-catch (Exception ex)
-{
-    Console.WriteLine($"Failed to create test station: {ex.Message}\n");
-}
-
-// Fix the location extension attribute and recreate the test station.
-Console.WriteLine("Fixing location and retrying...\n");
 testStation.Extension["location"] = new ExtensionValue { StringValue = "USA" };
-testStationId = await metadataStoreServiceClient.CreateTestStationAsync(testStation);
+var testStationId = await metadataStoreServiceClient.CreateTestStationAsync(testStation);
 
-// Create a software item with an invalid license extension attribute.
-// This will result in an exception that we will catch below.
+// Create a software item with a valid license extension attribute.
 Console.WriteLine("Creating software item...");
 var softwareItem = new SoftwareItem
 {
@@ -73,21 +44,8 @@ var softwareItem = new SoftwareItem
     Version = "10.0.19044",
     SchemaId = schemaId,
 };
-softwareItem.Extension["license"] = new ExtensionValue { StringValue = "enterprise_LIC" };
-string? softwareItemId = null;
-try
-{
-    softwareItemId = await metadataStoreServiceClient.CreateSoftwareItemAsync(softwareItem);
-}
-catch (Exception ex)
-{
-    Console.WriteLine($"Failed to create software item: {ex.Message}\n");
-}
-
-// Fix the license extension attribute and recreate the software item.
-Console.WriteLine("Fixing license and retrying...\n");
 softwareItem.Extension["license"] = new ExtensionValue { StringValue = "LIC_enterprise" };
-softwareItemId = await metadataStoreServiceClient.CreateSoftwareItemAsync(softwareItem);
+var softwareItemId = await metadataStoreServiceClient.CreateSoftwareItemAsync(softwareItem);
 
 // Create a test result that includes the created metadata objects.
 Console.WriteLine("Creating test result with references to created metadata objects...");
@@ -128,9 +86,4 @@ if (publishedMeasurement is not null)
 else
 {
     Console.WriteLine("Measurement not found.");
-}
-
-static string GetCurrentFilePath([System.Runtime.CompilerServices.CallerFilePath] string filePath = "")
-{
-    return filePath;
 }

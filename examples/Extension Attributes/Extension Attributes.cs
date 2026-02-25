@@ -3,7 +3,6 @@ using NationalInstruments.MeasurementLink.Discovery.V1;
 using NationalInstruments.Measurements.Data.V1;
 using NationalInstruments.Measurements.Metadata.V1;
 using NationalInstruments.Protobuf.Types;
-using System.Reflection;
 using static NationalInstruments.Measurements.Data.V1.DataStoreService;
 using static NationalInstruments.Measurements.Metadata.V1.MetadataStoreService;
 
@@ -14,16 +13,11 @@ var metadataStoreServiceClient = clientStubFactory.CreateClient<MetadataStoreSer
 
 // Register multiple hardware schemas.
 Console.WriteLine("Registering hardware schemas...");
-var currentFilePath = GetCurrentFilePath();
-var currentDirectory = Path.GetDirectoryName(currentFilePath) ?? throw new InvalidOperationException("Unable to determine directory path");
-var cableSchemaPath = Path.Combine(currentDirectory, "cable_schema.toml");
-var socketSchemaPath = Path.Combine(currentDirectory, "socket_schema.toml");
-var scopeSchemaPath = Path.Combine(currentDirectory, "scope_schema.toml");
-var testResultSchemaPath = Path.Combine(currentDirectory, "test_result_schema.toml");
-var cableSchemaId = await metadataStoreServiceClient.RegisterSchemaFromFileAsync(cableSchemaPath);
-var socketSchemaId = await metadataStoreServiceClient.RegisterSchemaFromFileAsync(socketSchemaPath);
-var scopeSchemaId = await metadataStoreServiceClient.RegisterSchemaFromFileAsync(scopeSchemaPath);
-var testResultSchemaId = await metadataStoreServiceClient.RegisterSchemaFromFileAsync(testResultSchemaPath);
+var appDirectory = AppDomain.CurrentDomain.BaseDirectory;
+var cableSchemaId = await metadataStoreServiceClient.RegisterSchemaFromFileAsync(Path.Combine(appDirectory, "cable_schema.toml"));
+var socketSchemaId = await metadataStoreServiceClient.RegisterSchemaFromFileAsync(Path.Combine(appDirectory, "socket_schema.toml"));
+var scopeSchemaId = await metadataStoreServiceClient.RegisterSchemaFromFileAsync(Path.Combine(appDirectory, "scope_schema.toml"));
+var testResultSchemaId = await metadataStoreServiceClient.RegisterSchemaFromFileAsync(Path.Combine(appDirectory, "test_result_schema.toml"));
 
 // Create a hardware item that follows the cable schema.
 Console.WriteLine("Creating hardware items with extension attributes...");
@@ -100,10 +94,4 @@ if (foundMeasurement is not null)
 else
 {
     Console.WriteLine("No measurements found matching the query criteria.");
-}
-
-static string GetCurrentFilePath([System.Runtime.CompilerServices.CallerFilePath] string filePath = "")
-{
-    // Return the path of this .cs file.
-    return filePath;
 }
