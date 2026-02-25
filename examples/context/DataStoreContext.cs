@@ -1,7 +1,7 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace NI.DataStore.Utilities
+namespace NationalInstruments.DataStore.Utilities
 {
     /// <summary>
     /// A context manager for running a data store in an isolated environment.
@@ -10,14 +10,14 @@ namespace NI.DataStore.Utilities
     public class DataStoreContext : IDisposable
     {
         // Environment variable names
-        private const string DISCOVERY_SERVICE_CLUSTER_ID_ENV_VAR = "NIDiscovery_ClusterId";
-        private const string DATA_STORE_DATABASE_PATH_ENV_VAR = "NIDATASTORE_DATASTORESETTINGS__SQLITEDATABASEPATH";
-        private const string DATA_STORE_DATA_FILES_DIRECTORY_PATH_ENV_VAR = "NIDATASTORE_DATASTORESETTINGS__DATAFILESDIRECTORY";
-        private const string DATA_STORE_INGEST_DIRECTORY_PATH_ENV_VAR = "NIDATASTORE_DATASTORESETTINGS__INGESTDIRECTORY";
-        private const string DATA_STORE_FAILED_INGEST_DIRECTORY_PATH_ENV_VAR = "NIDATASTORE_DATASTORESETTINGS__FAILEDINGESTDIRECTORY";
-        private const string DATA_STORE_TDMS_EXPIRATION_SECONDS_ENV_NAME = "NIDATASTORE_DATASTORESETTINGS__TDMSFILECACHEEXPIRATIONSECONDS";
+        private const string DiscoveryServiceClusterIdEnvVar = "NIDiscovery_ClusterId";
+        private const string DataStoreDatabasePathEnvVar = "NIDATASTORE_DATASTORESETTINGS__SQLITEDATABASEPATH";
+        private const string DataStoreDataFilesDirectoryPathEnvVar = "NIDATASTORE_DATASTORESETTINGS__DATAFILESDIRECTORY";
+        private const string DataStoreIngestDirectoryPathEnvVar = "NIDATASTORE_DATASTORESETTINGS__INGESTDIRECTORY";
+        private const string DataStoreFailedIngestDirectoryPathEnvVar = "NIDATASTORE_DATASTORESETTINGS__FAILEDINGESTDIRECTORY";
+        private const string DataStoreTdmsExpirationSecondsEnvName = "NIDATASTORE_DATASTORESETTINGS__TDMSFILECACHEEXPIRATIONSECONDS";
         
-        private const string DEFAULT_FOLDER_NAME = "temp_data";
+        private const string DefaultFolderName = "temp_data";
 
         private readonly string? _baseDirectoryPath;
         private readonly Dictionary<string, string?> _originalEnvironment;
@@ -77,7 +77,7 @@ namespace NI.DataStore.Utilities
             GC.SuppressFinalize(this);
         }
 
-        public string GetClusterId()
+        private string GetClusterId()
         {
             return GetBaseDirectoryHash();
         }
@@ -108,12 +108,12 @@ namespace NI.DataStore.Utilities
         {
             var environmentVariables = new[]
             {
-                DISCOVERY_SERVICE_CLUSTER_ID_ENV_VAR,
-                DATA_STORE_DATABASE_PATH_ENV_VAR,
-                DATA_STORE_DATA_FILES_DIRECTORY_PATH_ENV_VAR,
-                DATA_STORE_INGEST_DIRECTORY_PATH_ENV_VAR,
-                DATA_STORE_FAILED_INGEST_DIRECTORY_PATH_ENV_VAR,
-                DATA_STORE_TDMS_EXPIRATION_SECONDS_ENV_NAME
+                DiscoveryServiceClusterIdEnvVar,
+                DataStoreDatabasePathEnvVar,
+                DataStoreDataFilesDirectoryPathEnvVar,
+                DataStoreIngestDirectoryPathEnvVar,
+                DataStoreFailedIngestDirectoryPathEnvVar,
+                DataStoreTdmsExpirationSecondsEnvName
             };
 
             foreach (var envVar in environmentVariables)
@@ -125,7 +125,7 @@ namespace NI.DataStore.Utilities
         private void InitializeClusterId()
         {
             string clusterId = GetClusterId();
-            Environment.SetEnvironmentVariable(DISCOVERY_SERVICE_CLUSTER_ID_ENV_VAR, clusterId);
+            Environment.SetEnvironmentVariable(DiscoveryServiceClusterIdEnvVar, clusterId);
         }
 
         private void InitializeDataStorePaths()
@@ -137,11 +137,11 @@ namespace NI.DataStore.Utilities
             string ingestDir = Path.Combine(baseDirectoryPath, "Ingest");
             string failedIngestDir = Path.Combine(baseDirectoryPath, "FailedIngest");
 
-            Environment.SetEnvironmentVariable(DATA_STORE_DATABASE_PATH_ENV_VAR, metadataDbPath);
-            Environment.SetEnvironmentVariable(DATA_STORE_DATA_FILES_DIRECTORY_PATH_ENV_VAR, dataFilesDir);
-            Environment.SetEnvironmentVariable(DATA_STORE_INGEST_DIRECTORY_PATH_ENV_VAR, ingestDir);
-            Environment.SetEnvironmentVariable(DATA_STORE_FAILED_INGEST_DIRECTORY_PATH_ENV_VAR, failedIngestDir);
-            Environment.SetEnvironmentVariable(DATA_STORE_TDMS_EXPIRATION_SECONDS_ENV_NAME, "0");
+            Environment.SetEnvironmentVariable(DataStoreDatabasePathEnvVar, metadataDbPath);
+            Environment.SetEnvironmentVariable(DataStoreDataFilesDirectoryPathEnvVar, dataFilesDir);
+            Environment.SetEnvironmentVariable(DataStoreIngestDirectoryPathEnvVar, ingestDir);
+            Environment.SetEnvironmentVariable(DataStoreFailedIngestDirectoryPathEnvVar, failedIngestDir);
+            Environment.SetEnvironmentVariable(DataStoreTdmsExpirationSecondsEnvName, "0");
         }
 
         private string GetBaseDirectoryHash()
@@ -191,7 +191,7 @@ namespace NI.DataStore.Utilities
             }
 
             var examplesDirectory = parentInfo.FullName;
-            return Path.Combine(examplesDirectory, DEFAULT_FOLDER_NAME);
+            return Path.Combine(examplesDirectory, DefaultFolderName);
         }
 
         private void RestoreEnvironment()
