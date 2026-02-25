@@ -40,7 +40,6 @@ namespace NationalInstruments.DataStore.Utilities
 
         /// <summary>
         /// Initializes the data store context by setting up necessary environment variables.
-        /// This is called automatically when using the 'using' statement.
         /// </summary>
         public void Initialize()
         {
@@ -55,7 +54,6 @@ namespace NationalInstruments.DataStore.Utilities
 
         /// <summary>
         /// Cleans up the data store context by resetting environment variables.
-        /// This is called automatically when using the 'using' statement.
         /// </summary>
         public void Close()
         {
@@ -70,6 +68,7 @@ namespace NationalInstruments.DataStore.Utilities
 
         /// <summary>
         /// Disposes the DataStoreContext and restores environment variables.
+        /// This is called automatically when using the 'using' statement.
         /// </summary>
         public void Dispose()
         {
