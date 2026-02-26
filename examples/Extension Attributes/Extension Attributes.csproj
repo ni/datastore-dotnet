@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\context\DataStoreContext.csproj" />
+    <ProjectReference Include="..\DataStoreContext\DataStoreContext.csproj" />
   </ItemGroup>
 
   <ItemGroup>
