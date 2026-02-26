@@ -21,7 +21,6 @@ namespace NationalInstruments.DataStore.Utilities
 
         private readonly string? _baseDirectoryPath;
         private readonly Dictionary<string, string?> _originalEnvironment;
-        private bool _initialized = false;
         private bool _disposed = false;
 
         /// <summary>
@@ -35,35 +34,7 @@ namespace NationalInstruments.DataStore.Utilities
         {
             _baseDirectoryPath = baseDirectoryPath;
             _originalEnvironment = new Dictionary<string, string?>();
-            Initialize();
-        }
-
-        /// <summary>
-        /// Initializes the data store context by setting up necessary environment variables.
-        /// </summary>
-        public void Initialize()
-        {
-            if (_initialized)
-            {
-                return;
-            }
-
             InitializeEnvironment();
-            _initialized = true;
-        }
-
-        /// <summary>
-        /// Cleans up the data store context by resetting environment variables.
-        /// </summary>
-        public void Close()
-        {
-            if (!_initialized)
-            {
-                return;
-            }
-
-            RestoreEnvironment();
-            _initialized = false;
         }
 
         /// <summary>
@@ -76,11 +47,6 @@ namespace NationalInstruments.DataStore.Utilities
             GC.SuppressFinalize(this);
         }
 
-        private string GetClusterId()
-        {
-            return GetBaseDirectoryHash();
-        }
-
         /// <summary>
         /// Protected implementation of Dispose pattern.
         /// </summary>
@@ -90,7 +56,7 @@ namespace NationalInstruments.DataStore.Utilities
             {
                 if (disposing)
                 {
-                    Close();
+                    RestoreEnvironment();
                 }
                 _disposed = true;
             }
@@ -163,6 +129,11 @@ namespace NationalInstruments.DataStore.Utilities
             }
         }
 
+        private string GetClusterId()
+        {
+            return GetBaseDirectoryHash();
+        }
+
         private string GetBaseDirectoryPath()
         {
             if (!string.IsNullOrEmpty(_baseDirectoryPath))
@@ -195,21 +166,9 @@ namespace NationalInstruments.DataStore.Utilities
 
         private void RestoreEnvironment()
         {
-            foreach (var kvp in _originalEnvironment)
+            foreach (var (environmentVariable, originalValue) in _originalEnvironment)
             {
-                string environmentVariable = kvp.Key;
-                string? originalValue = kvp.Value;
-
-                if (originalValue == null)
-                {
-                    // The environment variable was not originally set; remove it
-                    Environment.SetEnvironmentVariable(environmentVariable, null);
-                }
-                else
-                {
-                    // Restore the original value
-                    Environment.SetEnvironmentVariable(environmentVariable, originalValue);
-                }
+                Environment.SetEnvironmentVariable(environmentVariable, originalValue);
             }
         }
 

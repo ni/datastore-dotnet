@@ -27,7 +27,7 @@ const string AliasUutInstanceAmp1 = "UUT_Instance_AMP_001";
 const string AllItemsQuery = "";
 
 // Initialize DataStoreContext to set up isolated environment
-using var context = new DataStoreContext();
+using var dataStoreContext = new DataStoreContext();
 
 // This using statement will ensure that the client stub factory is properly disposed.
 using var clientStubFactory = new GrpcClientStubFactory();

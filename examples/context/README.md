@@ -55,13 +55,12 @@ using (var context = new DataStoreContext())
 // Context is automatically disposed here
 ```
 
-### Option 3: Manual Initialization and Cleanup
+### Option 3: Manual Cleanup
 
 ```csharp
 using NationalInstruments.DataStore.Utilities;
 
 var context = new DataStoreContext();
-context.Initialize();
 try
 {
     // Your data store operations here
