@@ -67,7 +67,7 @@ try
 }
 finally
 {
-    context.Close();
+    context.Dispose();
 }
 ```
 

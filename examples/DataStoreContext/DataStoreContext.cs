@@ -80,9 +80,9 @@ namespace NationalInstruments.DataStore.Utilities
                 DataStoreTdmsExpirationSecondsEnvName
             };
 
-            foreach (var envVar in environmentVariables)
+            foreach (var environmentVariable in environmentVariables)
             {
-                _originalEnvironment[envVar] = Environment.GetEnvironmentVariable(envVar);
+                _originalEnvironment[environmentVariable] = Environment.GetEnvironmentVariable(environmentVariable);
             }
         }
 
