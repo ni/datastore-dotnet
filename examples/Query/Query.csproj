@@ -14,4 +14,8 @@
     <PackageReference Include="NI.Measurements.Metadata.V1.Api" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\DataStoreContext\DataStoreContext.csproj" />
+  </ItemGroup>
+
 </Project>

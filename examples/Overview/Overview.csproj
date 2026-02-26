@@ -15,6 +15,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DataStoreContext\DataStoreContext.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="*.json">
 	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</None>
