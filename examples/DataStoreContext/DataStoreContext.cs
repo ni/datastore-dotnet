@@ -20,7 +20,7 @@ namespace NationalInstruments.DataStore.Utilities
         private const string DefaultFolderName = "temp_data";
 
         private readonly string? _baseDirectoryPath;
-        private readonly Dictionary<string, string?> _originalEnvironment;
+        private readonly Dictionary<string, string?> _originalEnvironment = new();
         private bool _disposed = false;
 
         /// <summary>
@@ -33,7 +33,6 @@ namespace NationalInstruments.DataStore.Utilities
         public DataStoreContext(string? baseDirectoryPath = null)
         {
             _baseDirectoryPath = baseDirectoryPath;
-            _originalEnvironment = new Dictionary<string, string?>();
             InitializeEnvironment();
         }
 
