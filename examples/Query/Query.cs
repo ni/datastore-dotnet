@@ -1,4 +1,5 @@
 using NationalInstruments;
+using NationalInstruments.DataStore.Utilities;
 using NationalInstruments.MeasurementLink.Discovery.V1;
 using NationalInstruments.Measurements.Data.V1;
 using NationalInstruments.Measurements.Metadata.V1;
@@ -25,7 +26,9 @@ const string AliasUutInstancePs2 = "UUT_Instance_PS_002";
 const string AliasUutInstanceAmp1 = "UUT_Instance_AMP_001";
 const string AllItemsQuery = "";
 
-// Initialize clients
+// Initialize DataStoreContext to set up isolated environment
+using var context = new DataStoreContext();
+
 // This using statement will ensure that the client stub factory is properly disposed.
 using var clientStubFactory = new GrpcClientStubFactory();
 var dataStoreServiceClient = clientStubFactory.CreateClient<DataStoreServiceClient>();

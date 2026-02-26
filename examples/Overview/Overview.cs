@@ -1,10 +1,14 @@
 ﻿using NationalInstruments;
+using NationalInstruments.DataStore.Utilities;
 using NationalInstruments.MeasurementLink.Discovery.V1;
 using NationalInstruments.Measurements.Data.V1;
 using NationalInstruments.Measurements.Metadata.V1;
 using NationalInstruments.Protobuf.Types;
 using static NationalInstruments.Measurements.Data.V1.DataStoreService;
 using static NationalInstruments.Measurements.Metadata.V1.MetadataStoreService;
+
+// Initialize DataStoreContext to set up isolated environment
+using var context = new DataStoreContext();
 
 // This using statement will ensure that the client stub factory is properly disposed.
 using var clientStubFactory = new GrpcClientStubFactory();
