@@ -8,18 +8,23 @@ on:
   issue_comment:
     types: [created, edited, deleted]
 
+permissions:
+  issues: read
+
 jobs:
-  alert:
+  sync-issue:
     if: ${{ !github.event.issue.pull_request && github.event.issue.title != 'Dependency Dashboard' }}
     runs-on: ubuntu-latest
     steps:
       - name: Choose work item type
         id: choose_work_item_type
         run: |
-          if [ "${{ contains(github.event.issue.labels.*.name, 'enhancement') || contains(github.event.issue.labels.*.name, 'user story') }}" == "true" ]; then
+          if [ "${{ contains(github.event.issue.labels.*.name, 'enhancement') }}" == "true" ]; then
             echo "work_item_type=User Story" >> $GITHUB_OUTPUT
           elif [ "${{ contains(github.event.issue.labels.*.name, 'tech debt') }}" == "true" ]; then
             echo "work_item_type=Technical Debt" >> $GITHUB_OUTPUT
+          elif [ "${{ contains(github.event.issue.labels.*.name, 'research') }}" == "true" ]; then
+            echo "work_item_type=Research" >> $GITHUB_OUTPUT
           else
             echo "work_item_type=Bug" >> $GITHUB_OUTPUT
           fi
