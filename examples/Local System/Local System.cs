@@ -165,5 +165,5 @@ static string? SafeGet(Func<string> getter)
 
 static string ValueOrUnknown(string? value)
 {
-    return string.IsNullOrWhiteSpace(value) ? "N/A" : value;
+    return string.IsNullOrWhiteSpace(value) ? "Unknown" : value;
 }
