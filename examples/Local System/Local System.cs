@@ -7,8 +7,6 @@ using static NationalInstruments.Measurements.Data.V1.DataStoreService;
 using static NationalInstruments.Measurements.Metadata.V1.MetadataStoreService;
 using NiSystemConfiguration = NationalInstruments.SystemConfiguration.SystemConfiguration;
 
-const string Target = "localhost";
-
 // Initialize DataStoreContext to set up isolated environment
 using var dataStoreContext = new DataStoreContext();
 
@@ -17,56 +15,82 @@ using var clientStubFactory = new GrpcClientStubFactory();
 var dataStoreServiceClient = clientStubFactory.CreateClient<DataStoreServiceClient>();
 var metadataStoreServiceClient = clientStubFactory.CreateClient<MetadataStoreServiceClient>();
 
-Console.WriteLine("=== NI System Configuration Query ===");
-Console.WriteLine($"Target: {Target}");
+Console.WriteLine("Scanning system for metadata...");
+var systemMetadata = DetectSystemResources();
 
-try
-{
-    var operatorId = await CreateOperatorForCurrentUserAsync(metadataStoreServiceClient);
+Console.WriteLine("\nPublishing detected system metadata...");
+var testResultId = await PublishEmptyTestResultAsync(
+    systemMetadata,
+    dataStoreServiceClient,
+    metadataStoreServiceClient);
 
-    Console.WriteLine("Starting session with NI System Configuration...");
-    using var session = new NiSystemConfiguration(Target);
-    var testStationId = await CreateTestStationForCurrentMachineAsync(session, metadataStoreServiceClient);
-    var hardwareItemIds = await CreateHardwareItemsAsync(session, metadataStoreServiceClient);
-    var softwareItemIds = await CreateSoftwareItemsAsync(session, metadataStoreServiceClient);
-    var testResultId = await CreateTestResultFromIdsAsync(operatorId, testStationId, hardwareItemIds, softwareItemIds, dataStoreServiceClient);
+var testResult = await dataStoreServiceClient.GetTestResultAsync(testResultId);
+Console.WriteLine($"\nTestResult ID: {testResult.Id}");
+Console.WriteLine($"Operator: {testResult.OperatorId}");
+Console.WriteLine($"Test Station: {testResult.TestStationId}");
+Console.WriteLine($"Installed Software: {testResult.SoftwareItemIds.Count}");
+Console.WriteLine($"Available Hardware: {testResult.HardwareItemIds.Count}");
 
-    var testResult = await dataStoreServiceClient.GetTestResultAsync(testResultId);
-    Console.WriteLine("\n=== Retrieved Test Result ===");
-    Console.WriteLine($"TestResult ID: {testResult.Id}");
-    Console.WriteLine($"Operator: {testResult.OperatorId}");
-    Console.WriteLine($"Test Station: {testResult.TestStationId}");
-    Console.WriteLine($"Installed Software Count: {testResult.SoftwareItemIds.Count}");
-    Console.WriteLine($"Hardware Item Count: {testResult.HardwareItemIds.Count}");
-}
-catch (SystemConfigurationException ex)
+static SystemMetadata DetectSystemResources()
 {
-    Console.WriteLine($"System Configuration error (0x{ex.ErrorCode:X}): {ex.Message}");
-}
-catch (Exception ex)
-{
-    Console.WriteLine($"Unhandled error: {ex.Message}");
+    using var session = new NiSystemConfiguration("localhost");
+    var @operator = CreateOperatorForCurrentUser();
+    var testStation = CreateTestStationForLocalMachine(session);
+    var hardwareItems = CreateHardwareItems(session);
+    var softwareItems = CreateSoftwareItems(session);
+
+    var systemMetadata = new SystemMetadata(@operator, testStation, hardwareItems, softwareItems);
+    return systemMetadata;
 }
 
-static async Task<string> CreateOperatorForCurrentUserAsync(MetadataStoreServiceClient metadataStoreServiceClient)
+static async Task<string> PublishEmptyTestResultAsync(
+    SystemMetadata systemMetadata,
+    DataStoreServiceClient dataStoreServiceClient,
+    MetadataStoreServiceClient metadataStoreServiceClient)
+{
+    var operatorId = await metadataStoreServiceClient.CreateOperatorAsync(systemMetadata.Operator);
+    var testStationId = await metadataStoreServiceClient.CreateTestStationAsync(systemMetadata.TestStation);
+    var hardwareItemIds = new List<string>();
+    var softwareItemIds = new List<string>();
+    foreach (HardwareItem item in systemMetadata.HardwareItems)
+    {
+        var hardwareItemId = await metadataStoreServiceClient.CreateHardwareItemAsync(item);
+        hardwareItemIds.Add(hardwareItemId);
+    }
+    foreach (SoftwareItem item in systemMetadata.SoftwareItems)
+    {
+        var softwareItemId = await metadataStoreServiceClient.CreateSoftwareItemAsync(item);
+        softwareItemIds.Add(softwareItemId);
+    }
+
+    var testResult = new TestResult
+    {
+        Name = "System Configuration Snapshot",
+        OperatorId = operatorId,
+        TestStationId = testStationId,
+        HardwareItemIds = { hardwareItemIds },
+        SoftwareItemIds = { softwareItemIds },
+    };
+    return await dataStoreServiceClient.CreateTestResultAsync(testResult);
+}
+
+static Operator CreateOperatorForCurrentUser()
 {
     string userName = Environment.UserName;
     Console.WriteLine($"Creating operator for current user: {userName}...");
-    var @operator = new Operator { Name = userName, Role = "Unknown" };
-    return await metadataStoreServiceClient.CreateOperatorAsync(@operator);
+    return new Operator { Name = userName, Role = "Unknown" };
 }
 
-static async Task<string> CreateTestStationForCurrentMachineAsync(NiSystemConfiguration session, MetadataStoreServiceClient metadataStoreServiceClient)
+static TestStation CreateTestStationForLocalMachine(NiSystemConfiguration session)
 {
     Console.WriteLine("Getting System Configuration Resource...");
     var system = session.GetSystemResource();
-    var hostname = ValueOrUnknown(SafeGet(() => system.Hostname));
-    Console.WriteLine($"Creating test station for current machine: {hostname}...");
-    var testStation = new TestStation { Name = hostname };
-    return await metadataStoreServiceClient.CreateTestStationAsync(testStation);
+    var hostname = ValueOrUnknown(system.Hostname);
+    Console.WriteLine($"Creating test station for local machine: {hostname}...");
+    return new TestStation { Name = hostname };
 }
 
-static async Task<IEnumerable<string>> CreateHardwareItemsAsync(NiSystemConfiguration session, MetadataStoreServiceClient metadataStoreServiceClient)
+static IReadOnlyList<HardwareItem> CreateHardwareItems(NiSystemConfiguration session)
 {
     var filter = new Filter(session, FilterMode.MatchValuesAll)
     {
@@ -76,7 +100,7 @@ static async Task<IEnumerable<string>> CreateHardwareItemsAsync(NiSystemConfigur
     };
     var hardware = session.FindHardware(filter);
     Console.WriteLine($"\n--- Hardware Items ({hardware.Count}) ---");
-    var hardwareItemIds = new List<string>();
+    var hardwareItems = new List<HardwareItem>();
 
     foreach (var resource in hardware)
     {
@@ -85,9 +109,9 @@ static async Task<IEnumerable<string>> CreateHardwareItemsAsync(NiSystemConfigur
         var serialNumber = "N/A";
         if (resource is HardwareResource hw)
         {
-            productName = ValueOrUnknown(SafeGet(() => hw.ProductName));
-            vendorName = ValueOrUnknown(SafeGet(() => hw.VendorName));
-            serialNumber = ValueOrUnknown(SafeGet(() => hw.SerialNumber));
+            productName = ValueOrUnknown(hw.ProductName);
+            vendorName = ValueOrUnknown(hw.VendorName);
+            serialNumber = ValueOrUnknown(hw.SerialNumber);
         }
 
         Console.WriteLine($"{productName}");
@@ -97,13 +121,12 @@ static async Task<IEnumerable<string>> CreateHardwareItemsAsync(NiSystemConfigur
             Manufacturer = vendorName,
             SerialNumber = serialNumber,
         };
-        var hardwareItemId = await metadataStoreServiceClient.CreateHardwareItemAsync(hardwareItem);
-        hardwareItemIds.Add(hardwareItemId);
+        hardwareItems.Add(hardwareItem);
     }
-    return hardwareItemIds;
+    return hardwareItems;
 }
 
-static async Task<IEnumerable<string>> CreateSoftwareItemsAsync(NiSystemConfiguration session, MetadataStoreServiceClient metadataStoreServiceClient)
+static IReadOnlyList<SoftwareItem> CreateSoftwareItems(NiSystemConfiguration session)
 {
     using var installed = session.GetInstalledSoftwareComponents();
     Console.WriteLine($"\n--- Installed Software ({installed.Count}) ---");
@@ -113,7 +136,7 @@ static async Task<IEnumerable<string>> CreateSoftwareItemsAsync(NiSystemConfigur
         .ThenBy(component => component.DisplayVersion, StringComparer.OrdinalIgnoreCase)
         .ToList();
 
-    var softwareItemIds = new List<string>();
+    var softwareItems = new List<SoftwareItem>();
     foreach (var component in sorted)
     {
         var title = ValueOrUnknown(component.Title);
@@ -127,43 +150,32 @@ static async Task<IEnumerable<string>> CreateSoftwareItemsAsync(NiSystemConfigur
             Product = title,
             Version = version,
         };
-        var softwareItemId = await metadataStoreServiceClient.CreateSoftwareItemAsync(softwareItem);
-        softwareItemIds.Add(softwareItemId);
+        softwareItems.Add(softwareItem);
     }
-    return softwareItemIds;
-}
-
-static async Task<string> CreateTestResultFromIdsAsync(
-    string operatorId,
-    string testStationId,
-    IEnumerable<string> hardwareItemIds,
-    IEnumerable<string> softwareItemIds,
-    DataStoreServiceClient dataStoreServiceClient)
-{
-    var testResult = new TestResult
-    {
-        Name = "System Configuration Snapshot",
-        OperatorId = operatorId,
-        TestStationId = testStationId,
-        HardwareItemIds = { hardwareItemIds },
-        SoftwareItemIds = { softwareItemIds },
-    };
-    return await dataStoreServiceClient.CreateTestResultAsync(testResult);
-}
-
-static string? SafeGet(Func<string> getter)
-{
-    try
-    {
-        return getter();
-    }
-    catch (SystemConfigurationException)
-    {
-        return null;
-    }
+    return softwareItems;
 }
 
 static string ValueOrUnknown(string? value)
 {
     return string.IsNullOrWhiteSpace(value) ? "Unknown" : value;
+}
+
+public class SystemMetadata
+{
+    public SystemMetadata(
+        Operator operatorValue,
+        TestStation testStation,
+        IReadOnlyList<HardwareItem> hardwareItems,
+        IReadOnlyList<SoftwareItem> softwareItems)
+    {
+        Operator = operatorValue;
+        TestStation = testStation;
+        HardwareItems = hardwareItems;
+        SoftwareItems = softwareItems;
+    }
+
+    public Operator Operator { get; }
+    public TestStation TestStation { get; }
+    public IReadOnlyList<HardwareItem> HardwareItems { get; }
+    public IReadOnlyList<SoftwareItem> SoftwareItems { get; }
 }
