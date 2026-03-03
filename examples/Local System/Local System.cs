@@ -68,9 +68,9 @@ static async Task<string> PublishEmptyTestResultAsync(
         Name = "System Configuration Snapshot",
         OperatorId = operatorId,
         TestStationId = testStationId,
-        HardwareItemIds = { hardwareItemIds },
-        SoftwareItemIds = { softwareItemIds },
     };
+    testResult.HardwareItemIds.AddRange(hardwareItemIds);
+    testResult.SoftwareItemIds.AddRange(softwareItemIds);
     return await dataStoreServiceClient.CreateTestResultAsync(testResult);
 }
 
