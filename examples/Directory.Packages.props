@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
-    <ASWPackageVersion>9.20.0.2095</ASWPackageVersion>
-    <MDSPackageVersion>9.20.0-ci.2602252004</MDSPackageVersion>
+    <ASWPackageVersion>9.21.0.2146</ASWPackageVersion>
+    <MDSPackageVersion>9.21.0-ci.2605281821</MDSPackageVersion>
   </PropertyGroup>
 
   <ItemGroup>
