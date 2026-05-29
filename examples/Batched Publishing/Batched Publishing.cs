@@ -103,8 +103,8 @@ Console.WriteLine($"Read Example Vector Condition: {readBackVectorCondition}");
 // Scalar measurements: batch publish standard types in a single call.
 // Each call returns a list of IDs. For scalar values only one ID is returned.
 Console.WriteLine("Publishing batch of scalar double measurement values...");
-var floatMeasurementIds = await dataStoreServiceClient.PublishMeasurementBatchAsync(
-    "Example Float Measurement",
+var doubleMeasurementIds = await dataStoreServiceClient.PublishMeasurementBatchAsync(
+    "Example Double Measurement",
     new double[] { 0.125, 0.25, 0.5, 1.0 },
     stepId);
 
@@ -126,7 +126,7 @@ var boolMeasurementIds = await dataStoreServiceClient.PublishMeasurementBatchAsy
     new bool[] { false, false, true, true },
     stepId);
 
-Console.WriteLine($"Published Example Float Measurement IDs: {string.Join(", ", floatMeasurementIds)}");
+Console.WriteLine($"Published Example Double Measurement IDs: {string.Join(", ", doubleMeasurementIds)}");
 Console.WriteLine($"Published Example Integer Measurement IDs: {string.Join(", ", intMeasurementIds)}");
 Console.WriteLine($"Published Example String Measurement IDs: {string.Join(", ", stringMeasurementIds)}");
 Console.WriteLine($"Published Example Bool Measurement IDs: {string.Join(", ", boolMeasurementIds)}");
@@ -143,13 +143,13 @@ var vectorMeasurementIds = await dataStoreServiceClient.PublishMeasurementBatchA
 Console.WriteLine($"Published Example Published-As-Vector Measurement IDs: {string.Join(", ", vectorMeasurementIds)}");
 
 // Scalar batch measurements are read back as a Vector containing all N iterations.
-var readBackFloatMeasurement = await dataStoreServiceClient.ReadMeasurementValueAsync<Vector>(floatMeasurementIds[0]);
+var readBackDoubleMeasurement = await dataStoreServiceClient.ReadMeasurementValueAsync<Vector>(doubleMeasurementIds[0]);
 var readBackIntMeasurement = await dataStoreServiceClient.ReadMeasurementValueAsync<Vector>(intMeasurementIds[0]);
 var readBackStringMeasurement = await dataStoreServiceClient.ReadMeasurementValueAsync<Vector>(stringMeasurementIds[0]);
 var readBackBoolMeasurement = await dataStoreServiceClient.ReadMeasurementValueAsync<Vector>(boolMeasurementIds[0]);
 var readBackVectorMeasurement = await dataStoreServiceClient.ReadMeasurementValueAsync<Vector>(vectorMeasurementIds[0]);
 
-Console.WriteLine($"Read Float Measurement: {readBackFloatMeasurement}");
+Console.WriteLine($"Read Double Measurement: {readBackDoubleMeasurement}");
 Console.WriteLine($"Read Integer Measurement: {readBackIntMeasurement}");
 Console.WriteLine($"Read String Measurement: {readBackStringMeasurement}");
 Console.WriteLine($"Read Bool Measurement: {readBackBoolMeasurement}");
