@@ -2,10 +2,8 @@ using NationalInstruments;
 using NationalInstruments.DataStore.Utilities;
 using NationalInstruments.MeasurementLink.Discovery.V1;
 using NationalInstruments.Measurements.Data.V1;
-using NationalInstruments.Measurements.Metadata.V1;
 using NationalInstruments.Protobuf.Types;
 using static NationalInstruments.Measurements.Data.V1.DataStoreService;
-using static NationalInstruments.Measurements.Metadata.V1.MetadataStoreService;
 
 // Initialize DataStoreContext to set up isolated environment
 using var dataStoreContext = new DataStoreContext();
@@ -13,7 +11,6 @@ using var dataStoreContext = new DataStoreContext();
 // This using statement will ensure that the client stub factory is properly disposed.
 using var clientStubFactory = new GrpcClientStubFactory();
 var dataStoreServiceClient = clientStubFactory.CreateClient<DataStoreServiceClient>();
-var metadataStoreServiceClient = clientStubFactory.CreateClient<MetadataStoreServiceClient>();
 
 // Create a test result to associate with the batch of conditions.
 Console.WriteLine("Creating test result...");
@@ -93,11 +90,13 @@ var readBackDoubleVector = await dataStoreServiceClient.ReadConditionValueAsync<
 var readBackIntVector = await dataStoreServiceClient.ReadConditionValueAsync<Vector>(intConditionId);
 var readBackStringVector = await dataStoreServiceClient.ReadConditionValueAsync<Vector>(stringConditionId);
 var readBackBoolVector = await dataStoreServiceClient.ReadConditionValueAsync<Vector>(boolConditionId);
+var readBackVectorCondition = await dataStoreServiceClient.ReadConditionValueAsync<Vector>(vectorConditionId);
 
 Console.WriteLine($"Read Example Double Condition: {readBackDoubleVector}");
 Console.WriteLine($"Read Example Integer Condition: {readBackIntVector}");
 Console.WriteLine($"Read Example String Condition: {readBackStringVector}");
 Console.WriteLine($"Read Example Bool Condition: {readBackBoolVector}");
+Console.WriteLine($"Read Example Vector Condition: {readBackVectorCondition}");
 
 // ── Batch Publishing Measurement Values ──────────────────────────────────────
 
