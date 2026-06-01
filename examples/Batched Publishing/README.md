@@ -1,6 +1,6 @@
 # Batched Publishing Example
 
-This example demonstrates how to use the `DataStoreServiceClient` to batch publish N iterations of data within a given `Step`. Rather than calling `publishConditionAsync` or `publishMeasurementAsync` N times to publish data for each of these N iterations, this data can instead be published by a single call to `PublishConditionBatchAsync` or `PublishMeasurementBatchAsync`, respectively. Batch publishing can help improve overall publishing performance.
+This example demonstrates how to use the `DataStoreServiceClient` to batch publish N iterations of data within a given `Step`. Rather than calling `PublishConditionAsync` or `PublishMeasurementAsync` N times to publish data for each of these N iterations, this data can instead be published by a single call to `PublishConditionBatchAsync` or `PublishMeasurementBatchAsync`, respectively. Batch publishing can help improve overall publishing performance.
 
 **Note:** These batching APIs handle batch publishing N iterations of data for a single condition or measurement with the specified name. They do *not* support publishing data across multiple (distinctly named) conditions or multiple (distinctly named) measurements at once.
 

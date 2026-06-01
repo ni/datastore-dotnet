@@ -12,12 +12,12 @@ using var dataStoreContext = new DataStoreContext();
 using var clientStubFactory = new GrpcClientStubFactory();
 var dataStoreServiceClient = clientStubFactory.CreateClient<DataStoreServiceClient>();
 
-// Create a test result to associate with the batch of conditions.
+// Create a test result for publishing conditions and measurements.
 Console.WriteLine("Creating test result...");
 var testResult = new TestResult { Name = "Batched Publishing Example" };
 var testResultId = await dataStoreServiceClient.CreateTestResultAsync(testResult);
 
-// Create a step to associate with the batch of conditions.
+// Create a step for publishing conditions and measurements.
 Console.WriteLine("Creating step...");
 var stepId = await dataStoreServiceClient.CreateStepAsync(new Step
 {
@@ -72,7 +72,7 @@ Console.WriteLine($"Published Example Bool Condition ID: {boolConditionId}");
 
 // Supplying a Vector allows the client to specify additional information, such as units.
 Console.WriteLine("Publishing batch of double values using a Vector...");
-var vector = new Vector { DoubleArray = new DoubleArray() };
+var vector = new Vector { DoubleArray = new DoubleArray(), Units = "V" };
 vector.DoubleArray.Values.Add(new double[] { 0.5, 1.0, 1.5, 2.0 });
 var vectorConditionId = await dataStoreServiceClient.PublishConditionBatchAsync(
     "Example Vector Condition",
@@ -126,14 +126,14 @@ var boolMeasurementIds = await dataStoreServiceClient.PublishMeasurementBatchAsy
     new bool[] { false, false, true, true },
     stepId);
 
-Console.WriteLine($"Published Example Double Measurement IDs: {string.Join(", ", doubleMeasurementIds)}");
-Console.WriteLine($"Published Example Integer Measurement IDs: {string.Join(", ", intMeasurementIds)}");
-Console.WriteLine($"Published Example String Measurement IDs: {string.Join(", ", stringMeasurementIds)}");
-Console.WriteLine($"Published Example Bool Measurement IDs: {string.Join(", ", boolMeasurementIds)}");
+Console.WriteLine($"Published Example Double Measurement IDs: {doubleMeasurementIds[0]}");
+Console.WriteLine($"Published Example Integer Measurement IDs: {intMeasurementIds[0]}");
+Console.WriteLine($"Published Example String Measurement IDs: {stringMeasurementIds[0]}");
+Console.WriteLine($"Published Example Bool Measurement IDs: {boolMeasurementIds[0]}");
 
 // Supplying a Vector allows specifying additional information such as units.
 Console.WriteLine("Publishing batch of scalar measurements using a Vector...");
-var measurementVector = new Vector { DoubleArray = new DoubleArray() };
+var measurementVector = new Vector { DoubleArray = new DoubleArray(), Units = "Hz" };
 measurementVector.DoubleArray.Values.Add(new double[] { 1.2, 1.4, 1.6, 1.8 });
 var vectorMeasurementIds = await dataStoreServiceClient.PublishMeasurementBatchAsync(
     "Example Published-As-Vector Measurement",
@@ -174,8 +174,8 @@ var waveformMeasurementIds = await dataStoreServiceClient.PublishMeasurementBatc
 Console.WriteLine("Publishing batch of Vector measurement values...");
 var vectorMeasurements = new Vector[]
 {
-    new Vector { DoubleArray = new DoubleArray() },
-    new Vector { DoubleArray = new DoubleArray() },
+    new Vector { DoubleArray = new DoubleArray(), Units = "A" },
+    new Vector { DoubleArray = new DoubleArray(), Units = "A" },
 };
 vectorMeasurements[0].DoubleArray.Values.Add(new double[] { 1.0, 1.25, 1.5 });
 vectorMeasurements[1].DoubleArray.Values.Add(new double[] { 2.0, 2.25, 2.5 });
