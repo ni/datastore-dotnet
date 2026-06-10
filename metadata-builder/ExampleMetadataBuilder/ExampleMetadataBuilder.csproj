@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-	  <PackageReference Include="NI.Discovery.V1.Client" />
+    <PackageReference Include="NI.Discovery.V1.Client" />
     <PackageReference Include="NI.Measurements.MetadataBuilder" />
   </ItemGroup>
 
