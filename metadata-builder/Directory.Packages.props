@@ -1,0 +1,12 @@
+<Project>
+
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageVersion Include="NI.Discovery.V1.Client" Version="9.21.0.2146" />
+    <PackageVersion Include="NI.Measurements.MetadataBuilder" Version="9.21.0-ci.2606081500" />
+  </ItemGroup>
+
+</Project>

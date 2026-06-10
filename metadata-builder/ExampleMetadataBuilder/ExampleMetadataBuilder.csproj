@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>NI.Measurements.Data.V1.ExampleMetadataBuilder</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+	  <PackageReference Include="NI.Discovery.V1.Client" />
+    <PackageReference Include="NI.Measurements.MetadataBuilder" />
+  </ItemGroup>
+
+</Project>
