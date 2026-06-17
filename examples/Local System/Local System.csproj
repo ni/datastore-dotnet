@@ -10,9 +10,7 @@
 
   <ItemGroup>
     <PackageReference Include="NationalInstruments.SystemConfiguration.x64" />
-    <PackageReference Include="NI.Discovery.V1.Client" />
-    <PackageReference Include="NI.Measurements.Data.V1.Api" />
-    <PackageReference Include="NI.Measurements.Metadata.V1.Api" />
+    <PackageReference Include="NI.DataStore.V1" />
   </ItemGroup>
 
   <ItemGroup>
