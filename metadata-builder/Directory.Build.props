@@ -1,0 +1,12 @@
+<Project>
+  <PropertyGroup>
+    <!--
+      Ignore NuGet warnings about missing framework references.
+      Some of our packages still only target .NET Framework
+      -->
+    <NoWarn>$(NoWarn);NU1701;NU1603</NoWarn>
+
+    <!-- Enable building these projects on Linux. -->
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+  </PropertyGroup>
+</Project>
