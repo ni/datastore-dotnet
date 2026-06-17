@@ -2,15 +2,11 @@
 
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
-    <ASWPackageVersion>9.21.0.2146</ASWPackageVersion>
-    <MDSPackageVersion>9.21.0-ci.2605281821</MDSPackageVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageVersion Include="NationalInstruments.SystemConfiguration.x64" Version="26.0.49263" />
-    <PackageVersion Include="NI.Discovery.V1.Client" Version="$(ASWPackageVersion)" />
-    <PackageVersion Include="NI.Measurements.Data.V1.Api" Version="$(MDSPackageVersion)" />
-    <PackageVersion Include="NI.Measurements.Metadata.V1.Api" Version="$(MDSPackageVersion)" />
+    <PackageVersion Include="NI.DataStore.V1" Version="9.21.0.2575-ci.2606161932" />
   </ItemGroup>
 
 </Project>
