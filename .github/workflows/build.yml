@@ -1,0 +1,30 @@
+name: Build
+
+on:
+  push:
+    branches: [main, releases/**]
+  pull_request:
+    branches: [main, releases/**]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  build:
+    name: Build on Windows
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+
+      - name: Build examples
+        run: dotnet build examples/Examples.slnx
+
+      - name: Build metadata-builder
+        run: dotnet build metadata-builder/MetadataBuilder.slnx
