@@ -27,6 +27,14 @@ jobs:
       - name: Build examples
         run: dotnet build examples/Examples.slnx
 
+      - name: Check formatting (examples)
+        if: always()
+        run: dotnet format examples/Examples.slnx --verify-no-changes
+
       - name: Build metadata-builder
         if: always()
         run: dotnet build metadata-builder/MetadataBuilder.slnx
+
+      - name: Check formatting (metadata-builder)
+        if: always()
+        run: dotnet format metadata-builder/MetadataBuilder.slnx --verify-no-changes

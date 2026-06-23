@@ -16,7 +16,7 @@ namespace NationalInstruments.DataStore.Utilities
         private const string DataStoreIngestDirectoryPathEnvVar = "NIDATASTORE_DATASTORESETTINGS__INGESTDIRECTORY";
         private const string DataStoreFailedIngestDirectoryPathEnvVar = "NIDATASTORE_DATASTORESETTINGS__FAILEDINGESTDIRECTORY";
         private const string DataStoreTdmsExpirationSecondsEnvName = "NIDATASTORE_DATASTORESETTINGS__TDMSFILECACHEEXPIRATIONSECONDS";
-        
+
         private const string DefaultFolderName = "temp_data";
 
         private readonly string? _baseDirectoryPath;
@@ -112,12 +112,12 @@ namespace NationalInstruments.DataStore.Utilities
         {
             string baseDirectoryPath = GetBaseDirectoryPath();
             string resolvedPath = Path.GetFullPath(baseDirectoryPath);
-            
+
             using (var sha256 = SHA256.Create())
             {
                 byte[] pathBytes = Encoding.UTF8.GetBytes(resolvedPath);
                 byte[] hashBytes = sha256.ComputeHash(pathBytes);
-                
+
                 // Convert to hex string and take first 32 characters
                 StringBuilder sb = new StringBuilder();
                 for (int i = 0; i < Math.Min(16, hashBytes.Length); i++)
