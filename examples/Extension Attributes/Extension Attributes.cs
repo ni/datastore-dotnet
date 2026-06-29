@@ -1,5 +1,5 @@
 ﻿using NationalInstruments;
-﻿using NationalInstruments.DataStore.Utilities;
+using NationalInstruments.DataStore.Utilities;
 using NationalInstruments.MeasurementLink.Discovery.V1;
 using NationalInstruments.Measurements.Data.V1;
 using NationalInstruments.Measurements.Metadata.V1;
