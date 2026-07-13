@@ -5,8 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageVersion Include="NI.Discovery.V1.Client" Version="9.21.0.2789" />
-    <PackageVersion Include="NI.Measurements.MetadataBuilder" Version="9.21.0.2789-ci.2606282318" />
+    <PackageVersion Include="NI.Discovery.V1.Client" Version="9.21.0.49836" />
+    <PackageVersion Include="NI.Measurements.MetadataBuilder" Version="9.21.1" />
   </ItemGroup>
 
 </Project>
