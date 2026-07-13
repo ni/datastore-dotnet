@@ -6,7 +6,7 @@
 
   <ItemGroup>
     <PackageVersion Include="NationalInstruments.SystemConfiguration.x64" Version="26.0.49263" />
-    <PackageVersion Include="NI.DataStore.V1" Version="9.21.0.2789-ci.2606282138" />
+    <PackageVersion Include="NI.DataStore.V1" Version="9.21.1" />
   </ItemGroup>
 
 </Project>
