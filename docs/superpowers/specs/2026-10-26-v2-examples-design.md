@@ -92,6 +92,10 @@ examples\
       Extension Attributes.csproj
       Extension Attributes.cs
       README.md
+    Local System\
+      Local System.csproj
+      Local System.cs
+      README.md
 ```
 
 The names intentionally follow the current V1 naming style: concise,
@@ -267,6 +271,30 @@ validated and how workspace boundaries affect consumer access.
 verticals. Do not implement this project until the selected `NI.DataStore.V2`
 package and service expose the required contract.
 
+### Local System
+
+**Purpose:** Capture the local machine's operator, test station, NI hardware,
+and installed software as metadata associated with a V2 TestResult.
+
+**Capabilities:**
+
+1. Discover the current user, local computer, NI hardware, and installed
+   software through `NationalInstruments.SystemConfiguration.x64`.
+2. Create or resolve the corresponding metadata with the supported metadata
+   API.
+3. Create a V2 TestResult for the local-system snapshot.
+4. Associate the discovered metadata with the V2 TestResult.
+5. Read the TestResult back and verify the captured metadata associations.
+
+**Consumer outcome:** Understand how a practical local-system discovery
+workflow produces V2 test data with traceable machine, hardware, software,
+and operator context.
+
+**Stage gate:** Stage 2 metadata-relationship and inline metadata
+find-or-create behavior. The project is deferred when the selected package and
+service support only Stage 1 references to pre-existing metadata by ID or
+alias.
+
 ## Documentation Standards
 
 Every V2 example README must include:
@@ -340,7 +368,9 @@ failure.
    non-scalar lifecycle contract are complete.
 8. Implement `Extension Attributes` after its Stage 3 extension-schema and
    workspace/RBAC verticals are delivered.
-9. Do not add fourth-stage examples under this design.
+9. Implement `Local System` after its Stage 2 metadata-relationship contract
+   is delivered.
+10. Do not add fourth-stage examples under this design.
 
 ## Acceptance Criteria
 
