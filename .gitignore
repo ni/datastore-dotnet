@@ -33,6 +33,7 @@ vgcore.*
 *.log
 *.bak
 *.orig
+.worktrees/
 
 # Environment variables and secrets
 .env
