@@ -13,14 +13,15 @@ service.
 
 ## Scope
 
-This design covers the first three V2 delivery stages:
+This design covers the consumer examples for the first two V2 delivery stages,
+with selected third-stage capabilities incorporated into the relevant examples
+when they are delivered:
 
 - Stage 1: scalar tracer-bullet capabilities.
 - Stage 2: batch and inline creation, measurement fields and limits,
   update/delete, and non-scalar values when their delivery dependencies are
   complete.
-- Stage 3: extension schemas, workspace/RBAC behavior, and performance
-  scenarios.
+- Stage 3: extension-schema and workspace/RBAC behavior within `Overview`.
 
 The following fourth-stage capabilities are explicitly out of scope:
 
@@ -80,21 +81,13 @@ examples\
       Batched Publishing.csproj
       Batched Publishing.cs
       README.md
-    Measurement Fields\
-      Measurement Fields.csproj
-      Measurement Fields.cs
+    Measurement Values\
+      Measurement Values.csproj
+      Measurement Values.cs
       README.md
     Update and Delete\
       Update and Delete.csproj
       Update and Delete.cs
-      README.md
-    Extension Attributes\
-      Extension Attributes.csproj
-      Extension Attributes.cs
-      README.md
-    Performance\
-      Performance.csproj
-      Performance.cs
       README.md
 ```
 
@@ -144,8 +137,9 @@ prerelease package before compiling examples.
 5. Create one `Step` for an execution.
 6. Add a `Condition` owned by the step.
 7. Create one scalar `Measurement` under the step.
-8. Read back the created resources and measurement value.
-9. Verify that the measurement exposes the step-owned condition.
+8. Add and read one small open `Extension` value.
+9. Read back the created resources and measurement value.
+10. Verify that the measurement exposes the step-owned condition.
 
 **Consumer outcome:** Understand the V2 resource graph:
 
@@ -160,8 +154,12 @@ The example explains the V2 rules that differ from V1: one step per
 execution, one measurement per value, step-owned conditions, and no
 `ParametricIndex`.
 
-**Stage gate:** Stage 1 only. It must not use batch APIs, update/delete,
-inline metadata creation, non-scalar values, or any other later-stage feature.
+**Stage gate:** The scalar lifecycle is Stage 1. It must not use batch APIs,
+update/delete, inline metadata creation, non-scalar values, or any other
+later-stage feature. The open-extension case is included only when supported by
+the delivered V2 package and service. Schema-governed extension validation and
+workspace authorization are added to this example when their Stage 3 verticals
+are available.
 
 ### Query
 
@@ -203,9 +201,9 @@ failure.
 implemented until that capability is available in both the V2 package and
 service.
 
-### Measurement Fields
+### Measurement Values
 
-**Purpose:** Teach how to define a V2 Measurement correctly.
+**Purpose:** Teach how to define and retrieve V2 Measurement values correctly.
 
 **Capabilities:**
 
@@ -220,12 +218,15 @@ service.
 
 **Consumer outcome:** Understand that limits are independent values, fields
 such as value and limits are immutable after creation, and non-scalar storage
-requires its own delivered lifecycle contract.
+requires its own delivered lifecycle contract. This is intentionally one
+example because scalar and non-scalar values are both Measurement concerns.
 
 **Stage gate:** Scalar fields and limits require the Stage 2 new-resource-fields
 vertical. Non-scalar content remains deferred until the DEC-008 storage
 decision and its service/package support are complete. No placeholder code is
-created before then.
+created before then. A standalone `Non-Scalar Values` project is considered
+only if value-store setup, data-moniker behavior, limits, streaming, and
+cleanup make this example too large to understand as part of Measurement Values.
 
 ### Update and Delete
 
@@ -246,41 +247,6 @@ created before then.
 relationship invariants, and avoid partial lifecycle changes.
 
 **Stage gate:** Stage 2 update/delete vertical.
-
-### Extension Attributes
-
-**Purpose:** Teach custom data validation and workspace boundaries.
-
-**Capabilities:**
-
-1. Write and read open `Extension` values when no schema is assigned.
-2. Register and use closed extension schemas.
-3. Verify that undeclared closed-schema keys are rejected without partial
-   writes.
-4. Demonstrate configured local and hosted workspace authorization behavior.
-5. Demonstrate cross-workspace metadata-reference behavior where available.
-
-**Consumer outcome:** Understand open versus schema-governed extensions and
-how workspace boundaries affect consumer access.
-
-**Stage gate:** Stage 3 extension-schema and RBAC verticals.
-
-### Performance
-
-**Purpose:** Provide reproducible, consumer-relevant performance scenarios.
-
-**Capabilities:**
-
-1. Measure scalar creation throughput.
-2. Measure condition propagation and fan-out.
-3. Measure scalar measurement queries and projections.
-4. Record scenario version, data size, elapsed time, throughput, and resource
-   usage.
-
-**Consumer outcome:** Allow repeatable regression investigation without
-claiming unsupported product-level performance guarantees.
-
-**Stage gate:** Stage 3 performance vertical and stable preceding contracts.
 
 ## Documentation Standards
 
@@ -348,13 +314,13 @@ failure.
    workflow.
 4. Implement and manually validate `Overview` against the real V2 service.
 5. Implement `Query` after the scalar query contract is available.
-6. Implement `Batched Publishing`, `Measurement Fields`, and `Update and
+6. Implement `Batched Publishing`, `Measurement Values`, and `Update and
    Delete` independently as their Stage 2 package/service verticals become
    available.
-7. Add non-scalar content to `Measurement Fields` only after DEC-008 and the
+7. Add non-scalar content to `Measurement Values` only after DEC-008 and the
    non-scalar lifecycle contract are complete.
-8. Implement `Extension Attributes` and `Performance` after their Stage 3
-   verticals are delivered.
+8. Add closed-schema extension validation and workspace/RBAC behavior to
+   `Overview` after their Stage 3 verticals are delivered.
 9. Do not add fourth-stage examples under this design.
 
 ## Acceptance Criteria
