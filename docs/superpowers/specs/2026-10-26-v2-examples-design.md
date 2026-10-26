@@ -13,15 +13,14 @@ service.
 
 ## Scope
 
-This design covers the consumer examples for the first two V2 delivery stages,
-with selected third-stage capabilities incorporated into the relevant examples
-when they are delivered:
+This design covers the consumer examples for the first three V2 delivery
+stages:
 
 - Stage 1: scalar tracer-bullet capabilities.
 - Stage 2: batch and inline creation, measurement fields and limits,
   update/delete, and non-scalar values when their delivery dependencies are
   complete.
-- Stage 3: extension-schema and workspace/RBAC behavior within `Overview`.
+- Stage 3: extension schemas and workspace/RBAC behavior.
 
 The following fourth-stage capabilities are explicitly out of scope:
 
@@ -89,6 +88,10 @@ examples\
       Update and Delete.csproj
       Update and Delete.cs
       README.md
+    Extension Attributes\
+      Extension Attributes.csproj
+      Extension Attributes.cs
+      README.md
 ```
 
 The names intentionally follow the current V1 naming style: concise,
@@ -137,9 +140,8 @@ prerelease package before compiling examples.
 5. Create one `Step` for an execution.
 6. Add a `Condition` owned by the step.
 7. Create one scalar `Measurement` under the step.
-8. Add and read one small open `Extension` value.
-9. Read back the created resources and measurement value.
-10. Verify that the measurement exposes the step-owned condition.
+8. Read back the created resources and measurement value.
+9. Verify that the measurement exposes the step-owned condition.
 
 **Consumer outcome:** Understand the V2 resource graph:
 
@@ -154,12 +156,9 @@ The example explains the V2 rules that differ from V1: one step per
 execution, one measurement per value, step-owned conditions, and no
 `ParametricIndex`.
 
-**Stage gate:** The scalar lifecycle is Stage 1. It must not use batch APIs,
-update/delete, inline metadata creation, non-scalar values, or any other
-later-stage feature. The open-extension case is included only when supported by
-the delivered V2 package and service. Schema-governed extension validation and
-workspace authorization are added to this example when their Stage 3 verticals
-are available.
+**Stage gate:** Stage 1 only. It must not use batch APIs, update/delete,
+inline metadata creation, non-scalar values, extension-schema behavior, or any
+other later-stage feature.
 
 ### Query
 
@@ -248,6 +247,26 @@ relationship invariants, and avoid partial lifecycle changes.
 
 **Stage gate:** Stage 2 update/delete vertical.
 
+### Extension Attributes
+
+**Purpose:** Teach V2 custom data validation and workspace boundaries.
+
+**Capabilities:**
+
+1. Register and use a schema-governed extension.
+2. Write and read valid extension values on the supported V2 resources.
+3. Verify that undeclared closed-schema keys are rejected without partial
+   writes.
+4. Demonstrate configured local and hosted workspace authorization behavior.
+5. Demonstrate cross-workspace metadata-reference behavior where available.
+
+**Consumer outcome:** Understand how schema-governed extension data is
+validated and how workspace boundaries affect consumer access.
+
+**Stage gate:** Stage 3 extension-schema, datastore RBAC, and metadata RBAC
+verticals. Do not implement this project until the selected `NI.DataStore.V2`
+package and service expose the required contract.
+
 ## Documentation Standards
 
 Every V2 example README must include:
@@ -319,8 +338,8 @@ failure.
    available.
 7. Add non-scalar content to `Measurement Values` only after DEC-008 and the
    non-scalar lifecycle contract are complete.
-8. Add closed-schema extension validation and workspace/RBAC behavior to
-   `Overview` after their Stage 3 verticals are delivered.
+8. Implement `Extension Attributes` after its Stage 3 extension-schema and
+   workspace/RBAC verticals are delivered.
 9. Do not add fourth-stage examples under this design.
 
 ## Acceptance Criteria
