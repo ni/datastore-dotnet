@@ -1,0 +1,4 @@
+id = "https://example.com/v2-extension-attributes.schema.toml"
+
+[test_result]
+operator = "*"
