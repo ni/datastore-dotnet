@@ -9,8 +9,12 @@ const string measurementNamePrefix = "V2 Batched Publishing Measurement";
 const string rejectedMeasurementNamePrefix = "V2 Batched Publishing Rejected Measurement";
 
 var runSuffix = Guid.NewGuid().ToString("N");
-var testResultName = WithRunSuffix(testResultNamePrefix, runSuffix);
-var stepName = WithRunSuffix(stepNamePrefix, runSuffix);
+var testResultNames = Enumerable.Range(1, 2)
+    .Select(index => WithRunSuffix($"{testResultNamePrefix} {index}", runSuffix))
+    .ToArray();
+var stepNames = Enumerable.Range(1, 2)
+    .Select(index => WithRunSuffix($"{stepNamePrefix} {index}", runSuffix))
+    .ToArray();
 var measurementNames = Enumerable.Range(1, 3)
     .Select(index => WithRunSuffix($"{measurementNamePrefix} {index}", runSuffix))
     .ToArray();
@@ -20,26 +24,42 @@ using var dataStoreContext = new DataStoreContext(ParseEndpoint(args));
 var dataStoreServiceClient = dataStoreContext.CreateDataStoreClient();
 Console.WriteLine($"Run suffix: {runSuffix}");
 
-var testResult = await dataStoreServiceClient.CreateTestResultAsync(
-    new CreateTestResultRequest
+var testResultBatchResponse = await dataStoreServiceClient.BatchCreateTestResultsAsync(
+    new BatchCreateTestResultsRequest
     {
-        TestResult = new TestResult
+        Requests =
         {
-            Name = testResultName,
+            testResultNames.Select(name => new CreateTestResultRequest
+            {
+                TestResult = new TestResult
+                {
+                    Name = name,
+                },
+            }),
         },
-    });
-EnsureResource(testResult, $"TestResult '{testResultName}'");
+    }).ResponseAsync;
+EnsureTestResultBatchResponse(testResultBatchResponse.TestResults, testResultNames);
 
-var step = await dataStoreServiceClient.CreateStepAsync(
-    new CreateStepRequest
+var stepBatchResponse = await dataStoreServiceClient.BatchCreateStepsAsync(
+    new BatchCreateStepsRequest
     {
-        Step = new Step
+        Requests =
         {
-            TestResultId = testResult.Id,
-            Name = stepName,
+            stepNames.Select(
+                (name, index) => new CreateStepRequest
+                {
+                    Step = new Step
+                    {
+                        TestResultId = testResultBatchResponse.TestResults[index].Id,
+                        Name = name,
+                    },
+                }),
         },
-    });
-EnsureResource(step, $"Step '{stepName}'");
+    }).ResponseAsync;
+EnsureStepBatchResponse(
+    stepBatchResponse.Steps,
+    stepNames,
+    testResultBatchResponse.TestResults.Select(testResult => testResult.Id).ToArray());
 
 var batchResponse = await dataStoreServiceClient.BatchCreateMeasurementsAsync(
     new BatchCreateMeasurementsRequest
@@ -48,16 +68,24 @@ var batchResponse = await dataStoreServiceClient.BatchCreateMeasurementsAsync(
         {
             measurementNames.Select(name => new CreateMeasurementRequest
             {
-                Measurement = CreateMeasurement(step.Id, name),
+                Measurement = CreateMeasurement(stepBatchResponse.Steps[0].Id, name),
             }),
         },
     }).ResponseAsync;
 
-EnsureBatchResponse(batchResponse.Measurements, measurementNames, step.Id);
-await EnsureReadBackAsync(batchResponse.Measurements, measurementNames, step.Id);
-Console.WriteLine($"Verified ordered batch creation of {batchResponse.Measurements.Count} measurements.");
+EnsureMeasurementBatchResponse(
+    batchResponse.Measurements,
+    measurementNames,
+    stepBatchResponse.Steps[0].Id);
+await EnsureReadBackAsync(
+    batchResponse.Measurements,
+    measurementNames,
+    stepBatchResponse.Steps[0].Id);
+Console.WriteLine(
+    $"Verified ordered batch creation of {testResultBatchResponse.TestResults.Count} test results, " +
+    $"{stepBatchResponse.Steps.Count} steps, and {batchResponse.Measurements.Count} measurements.");
 
-await AssertInvalidBatchIsAtomicAsync(step.Id, rejectedMeasurementName);
+await AssertInvalidBatchIsAtomicAsync(stepBatchResponse.Steps[0].Id, rejectedMeasurementName);
 Console.WriteLine("Verified invalid batch failure was atomic and included validation context.");
 
 async Task EnsureReadBackAsync(
@@ -148,7 +176,56 @@ static Measurement CreateMeasurement(string stepId, string name) =>
         Value = MeasurementValues.From(1.0),
     };
 
-static void EnsureBatchResponse(
+static void EnsureTestResultBatchResponse(
+    IReadOnlyList<TestResult> testResults,
+    IReadOnlyList<string> expectedNames)
+{
+    if (testResults.Count != expectedNames.Count)
+    {
+        throw new InvalidOperationException(
+            $"Batch response contained {testResults.Count} test results; expected {expectedNames.Count}.");
+    }
+
+    for (var index = 0; index < testResults.Count; index++)
+    {
+        var testResult = testResults[index];
+        if (string.IsNullOrWhiteSpace(testResult.Id) || testResult.Name != expectedNames[index])
+        {
+            throw new InvalidOperationException(
+                $"TestResult batch response at index {index} did not preserve the requested resource. " +
+                $"Expected Name='{expectedNames[index]}' and a non-empty ID; " +
+                $"actual Id='{testResult.Id}', Name='{testResult.Name}'.");
+        }
+    }
+}
+
+static void EnsureStepBatchResponse(
+    IReadOnlyList<Step> steps,
+    IReadOnlyList<string> expectedNames,
+    IReadOnlyList<string> expectedTestResultIds)
+{
+    if (steps.Count != expectedNames.Count)
+    {
+        throw new InvalidOperationException(
+            $"Batch response contained {steps.Count} steps; expected {expectedNames.Count}.");
+    }
+
+    for (var index = 0; index < steps.Count; index++)
+    {
+        var step = steps[index];
+        if (string.IsNullOrWhiteSpace(step.Id) ||
+            step.Name != expectedNames[index] ||
+            step.TestResultId != expectedTestResultIds[index])
+        {
+            throw new InvalidOperationException(
+                $"Step batch response at index {index} did not preserve the requested resource. " +
+                $"Expected Name='{expectedNames[index]}', TestResultId='{expectedTestResultIds[index]}', and a non-empty ID; " +
+                $"actual Id='{step.Id}', Name='{step.Name}', TestResultId='{step.TestResultId}'.");
+        }
+    }
+}
+
+static void EnsureMeasurementBatchResponse(
     IReadOnlyList<Measurement> measurements,
     IReadOnlyList<string> expectedNames,
     string expectedStepId)

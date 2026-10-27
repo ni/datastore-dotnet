@@ -18,6 +18,13 @@ V2 examples must use the actual published V2 client package and supported MDS
 service behavior. They must not treat a proto declaration as proof that an API
 is available in a particular package or service release.
 
+## Current Runtime Availability
+
+The .NET V2 projects compile against the prerelease package, but no supported
+MDS runtime release or required V2 API and storage configuration has been
+confirmed. The examples are therefore not runnable yet. Keep their status as
+not runnable until those runtime requirements are published and verified.
+
 ## Design Principles
 
 - Keep V1 examples working while they are supported.

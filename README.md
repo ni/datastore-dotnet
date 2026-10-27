@@ -16,6 +16,6 @@ As a prerequisite to using the DataStore .NET API, you must install Measurement 
 ## V2 prerelease/internal examples
 
 The V2 examples are prerelease/internal and are documented in
-[examples\v2\README.md](examples\v2\README.md). V1 examples and their
+[examples/v2/README.md](examples/v2/README.md). V1 examples and their
 requirements remain unchanged. Before building or running V2 examples, complete
 the V2 feed-authentication prerequisites described in the V2 README.

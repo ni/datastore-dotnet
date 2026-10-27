@@ -5,16 +5,24 @@ using NationalInstruments.Protobuf.Types;
 const double submittedMeasurementValue = 42.0;
 const string submittedConditionName = "operating-mode";
 const string submittedConditionValue = "nominal";
+const string testResultNamePrefix = "V2 Overview Test Result";
+const string stepNamePrefix = "V2 Overview Step";
+const string measurementNamePrefix = "V2 Overview Scalar Measurement";
 
+var runSuffix = Guid.NewGuid().ToString("N");
+var testResultName = WithRunSuffix(testResultNamePrefix, runSuffix);
+var stepName = WithRunSuffix(stepNamePrefix, runSuffix);
+var measurementName = WithRunSuffix(measurementNamePrefix, runSuffix);
 using var dataStoreContext = new DataStoreContext(ParseEndpoint(args));
 var dataStoreServiceClient = dataStoreContext.CreateDataStoreClient();
+Console.WriteLine($"Run suffix: {runSuffix}");
 
 var testResult = await dataStoreServiceClient.CreateTestResultAsync(
     new CreateTestResultRequest
     {
         TestResult = new TestResult
         {
-            Name = "V2 Overview Test Result",
+            Name = testResultName,
         },
     });
 EnsureResource(testResult, "TestResult");
@@ -26,7 +34,7 @@ var step = await dataStoreServiceClient.CreateStepAsync(
         Step = new Step
         {
             TestResultId = testResult.Id,
-            Name = "V2 Overview Step",
+            Name = stepName,
         },
     });
 EnsureResource(step, "Step");
@@ -57,7 +65,7 @@ var measurement = await dataStoreServiceClient.CreateMeasurementAsync(
         Measurement = new Measurement
         {
             StepId = step.Id,
-            Name = "V2 Overview Scalar Measurement",
+            Name = measurementName,
             Value = MeasurementValues.From(submittedMeasurementValue),
         },
     });
@@ -124,6 +132,8 @@ static Uri ParseEndpoint(string[] arguments)
 
     return new Uri(endpoint, UriKind.Absolute);
 }
+
+static string WithRunSuffix(string namePrefix, string runSuffix) => $"{namePrefix} {runSuffix}";
 
 static void EnsureResource<TResource>(TResource? resource, string resourceDescription)
     where TResource : class
