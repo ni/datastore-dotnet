@@ -21,7 +21,7 @@ jobs:
       github.actor != 'dependabot[bot]')
     env:
       NuGetPackageSourceCredentials_niartifacts-nuget-packages: >-
-        Username=token;Password=${{ secrets.ARTIFACTORY_TOKEN }}
+        Username=${{ secrets.ARTIFACTORY_USERNAME }};Password=${{ secrets.ARTIFACTORY_TOKEN }}
 
     steps:
       - name: Checkout code
