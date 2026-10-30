@@ -1,0 +1,44 @@
+name: Build V2
+
+on:
+  push:
+    branches: [main, releases/**]
+  pull_request:
+    branches: [main, releases/**]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  build-v2:
+    name: Build V2 on Windows
+    runs-on: windows-latest
+    if: >-
+      github.event_name != 'pull_request' ||
+      (github.event.pull_request.head.repo.full_name == github.repository &&
+      github.actor != 'dependabot[bot]')
+    env:
+      NuGetPackageSourceCredentials_niartifacts-nuget-packages: >-
+        Username=${{ vars.JFROG_USERNAME }};Password=${{ secrets.JFROG_ACCESS_TOKEN }}
+        ;ValidAuthenticationTypes=Basic
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore V2 examples
+        run: dotnet restore examples/v2/V2.Examples.slnx --configfile examples/v2/nuget.config
+
+      - name: Build V2 examples
+        run: dotnet build examples/v2/V2.Examples.slnx --no-restore
+
+      - name: Check formatting (V2 examples)
+        if: always()
+        run: dotnet format examples/v2/V2.Examples.slnx --verify-no-changes --no-restore

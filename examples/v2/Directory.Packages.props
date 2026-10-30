@@ -1,0 +1,13 @@
+<Project>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageVersion Include="Grpc.Net.Client" Version="2.84.0" />
+    <PackageVersion Include="NI.DataStore.V2" Version="9.23.0-ci.2610222014" />
+    <PackageVersion Include="NI.Measurements.Metadata.V1.Api" Version="9.23.0-ci.2610222014" />
+    <PackageVersion Include="NationalInstruments.SystemConfiguration.x64" Version="26.0.49263" />
+  </ItemGroup>
+</Project>

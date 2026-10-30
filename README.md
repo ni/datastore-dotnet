@@ -12,3 +12,10 @@ This repo contains the source code for examples that show how to use the .NET AP
 ## Installation
 
 As a prerequisite to using the DataStore .NET API, you must install Measurement Data Services Software 2026 Q3 or later on your system. You can download and install this software using [NI Package Manager](https://www.ni.com/en/support/downloads/software-products/download.package-manager.html).
+
+## V2 prerelease/internal examples
+
+The V2 examples are prerelease/internal and are documented in
+[examples/v2/README.md](examples/v2/README.md). V1 examples and their
+requirements remain unchanged. Before building or running V2 examples, complete
+the V2 feed-authentication prerequisites described in the V2 README.

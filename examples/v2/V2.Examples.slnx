@@ -1,0 +1,10 @@
+<Solution>
+  <Project Path="DataStoreContext/DataStoreContext.csproj" />
+  <Project Path="Batched Publishing/Batched Publishing.csproj" />
+  <Project Path="Extension Attributes/Extension Attributes.csproj" />
+  <Project Path="Local System/Local System.csproj" />
+  <Project Path="Measurement Values/Measurement Values.csproj" />
+  <Project Path="Overview/Overview.csproj" />
+  <Project Path="Query/Query.csproj" />
+  <Project Path="Update and Delete/Update and Delete.csproj" />
+</Solution>
