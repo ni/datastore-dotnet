@@ -22,6 +22,7 @@ jobs:
     env:
       NuGetPackageSourceCredentials_niartifacts-nuget-packages: >-
         Username=${{ vars.JFROG_USERNAME }};Password=${{ secrets.JFROG_ACCESS_TOKEN }}
+        ;ValidAuthenticationTypes=Basic
 
     steps:
       - name: Checkout code
