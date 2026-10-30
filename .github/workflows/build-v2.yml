@@ -19,18 +19,17 @@ jobs:
       github.event_name != 'pull_request' ||
       (github.event.pull_request.head.repo.full_name == github.repository &&
       github.actor != 'dependabot[bot]')
+    env:
+      NuGetPackageSourceCredentials_niartifacts-nuget-packages: >-
+        Username=${{ vars.JFROG_USERNAME }};Password=${{ secrets.JFROG_ACCESS_TOKEN }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Setup .NET
-        uses: ni/dotnet-actions/setup-dotnet@497c653b06046fc80197afcbb5013c625246d280
+        uses: actions/setup-dotnet@v4
         with:
-          workspace-root: examples/v2
-          artifactory-url: https://pull.artifacts.ni.com/artifactory/api/nuget/v3/rnd-nuget-pre
-          jfrog-access-token: ${{ secrets.JFROG_ACCESS_TOKEN }}
-          jfrog-username: ${{ vars.JFROG_USERNAME }}
           dotnet-version: '10.0.x'
 
       - name: Restore V2 examples
